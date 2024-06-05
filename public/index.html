@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Agar Jelly</title>
+		<link rel="stylesheet" type="text/css" href="https://debutter.dev/x/css/style.css@1.2.0">
+		<link rel="stylesheet" type="text/css" href="./css/main.css">
+		<script type="importmap">
+		  {
+			"imports": {
+			  "@timohausmann/quadtree-ts": "https://cdn.jsdelivr.net/npm/@timohausmann/quadtree-ts@2.2.2/+esm"
+			}
+		  }
+		</script>
+		<script src="https://cdn.jsdelivr.net/npm/@timohausmann/quadtree-js@1.2.6/quadtree.min.js"></script>
+		<script src="/socket.io/socket.io.js"></script>
+		<script defer type="module" src="/js/main.js"></script>
+	</head>
+	<body class="zero-spacing full-page">
+		<div id="start-screen">
+			<input type="text" name="username" id="username" placeholder="Username">
+			<button id="start-button">Start</button>
+		</div>
+		<canvas class="full-page"></canvas>
+	</body>
+</html>

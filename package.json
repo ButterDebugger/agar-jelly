@@ -1,0 +1,17 @@
+{
+  "name": "agar-jelly",
+  "version": "1.0.0",
+  "description": "A clone of the game Agar.io with multiplayer",
+  "module": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "ButterDebugger",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.19.2",
+    "@timohausmann/quadtree-ts": "^2.2.2"
+  }
+}
