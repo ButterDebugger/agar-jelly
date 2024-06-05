@@ -40,10 +40,10 @@ export function drawBackground(camera) {
     ctx.closePath();
 }
 
-export function drawCell(camera, cell) {
+export function drawBlob(camera, blob) {
     ctx.beginPath();
-    ctx.fillStyle = cell.color;
-    ctx.arc(cell.x - camera.x, cell.y - camera.y, cell.r, 0, 2 * Math.PI);
+    ctx.fillStyle = blob.color;
+    ctx.arc(blob.x - camera.x, blob.y - camera.y, blob.r, 0, 2 * Math.PI);
     ctx.fill();
     ctx.closePath();
 }

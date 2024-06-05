@@ -1,5 +1,6 @@
 import { Quadtree } from "@timohausmann/quadtree-ts";
 import Player from "./player.js";
+import Food from "./food.js";
 
 export default class World {
     constructor(options = {}) {
@@ -7,6 +8,7 @@ export default class World {
         this.height = options.height ?? 10000;
 
         this.players = [];
+        this.foods = [];
 
         // Create the quadtree
         this.quadtree = new Quadtree({
@@ -22,9 +24,12 @@ export default class World {
     buildQuadtree() {
         this.quadtree.clear();
 
-        // Readd all players to the quadtree
+        // Readd all the worlds objects to the quadtree
         for (let player of this.players) {
             player.addToQuadtree();
+        }
+        for (let food of this.foods) {
+            food.addToQuadtree();
         }
     }
 
@@ -67,12 +72,52 @@ export default class World {
         return player;
     }
 
+    getOrCreateFood(options) {
+        if (typeof options.id == "string") {
+            // Find a food with a matching id
+            let food = this.foods.find(f => f.id === options.id);
+
+            // If the food exists, rewrite its properties
+            if (food) {
+                if (options.x) food.x = options.x;
+                if (options.y) food.y = options.y;
+                if (options.mass) food.mass = options.mass;
+                if (options.color) food.color = options.color;
+
+                // Return the existing food
+                return food;
+            }
+        }
+
+        // Create a new food since it doesn't already exist
+        let food = new Food(this, options);
+        this.foods.push(food);
+        return food;
+    }
+
+    removePlayer(player) {
+        let index = this.players.indexOf(player);
+        if (index === -1) return false;
+
+        this.players.splice(index, 1);
+        return true;
+    }
+
+    removeFood(food) {
+        let index = this.foods.indexOf(food);
+        if (index === -1) return false;
+
+        this.foods.splice(index, 1);
+        return true;
+    }
+
     // Serialize the data for sending
     serialize() {
         return {
             width: this.width,
             height: this.height,
-            players: this.players.map(player => player.serialize())
+            players: this.players.map(player => player.serialize()),
+            foods: this.foods.map(food => food.serialize())
         };
     }
 }

@@ -2,10 +2,22 @@ import { randomUUID } from "node:crypto";
 import World from "../public/js/common/world.js";
 import { io } from "./index.js";
 
+const randomInt = (min = 0, max = 1) => Math.floor(Math.random() * (max - min + 1) + min);
+
 let world = new World({
     width: 10000,
     height: 10000
 });
+
+for (let i = 0; i < 1000; i++) {
+    world.getOrCreateFood({
+        id: randomUUID(),
+        x: randomInt(0, world.width),
+        y: randomInt(0, world.height),
+        color: generateColor(),
+        mass: 10
+    });
+}
 
 export function connectionHandler(socket) {
     socket.player = null;
@@ -25,12 +37,6 @@ export function connectionHandler(socket) {
             id: randomUUID(),
             x: 0,
             y: 0,
-            mass: 10
-        });
-        player.addCell({
-            id: randomUUID(),
-            x: 100,
-            y: 100,
             mass: 20
         });
 
@@ -42,8 +48,6 @@ export function connectionHandler(socket) {
 }
 
 function generateColor() {
-    const randomInt = (min = 0, max = 1) => Math.floor(Math.random() * (max - min + 1) + min);
-
     let color = [ 255, randomInt(36, 255), 36 ]
         .map(value => ({ value, sort: Math.random() }))
         .sort((a, b) => a.sort - b.sort)

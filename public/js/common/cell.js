@@ -1,4 +1,5 @@
 import { Circle } from "@timohausmann/quadtree-ts";
+import Food from "./food.js";
 
 export const maxSpeed = 10;
 export const minSpeed = 1;
@@ -47,12 +48,29 @@ export default class Cell extends Circle {
         this.y += this.dir.y * speed * this.speedMultiplier;
 
         this.handleWallCollision();
+        this.handleFoodCollision();
     }
 
     // Prevents the cell from breaching the world's borders
     handleWallCollision() {
         this.x = Math.max(0, Math.min(this.player.world.width, this.x));
         this.y = Math.max(0, Math.min(this.player.world.height, this.y));
+    }
+
+    handleFoodCollision() {
+        // Get nearby object in the worlds quadtree
+        const elements = this.player.world.quadtree.retrieve(this);
+
+        for (let element of elements) {
+            if (element instanceof Food) {
+                let dist = Math.sqrt(Math.pow(element.x - this.x, 2) + Math.pow(element.y - this.y, 2));
+
+                if (dist < element.r + this.r) {
+                    element.remove();
+                    this.mass += element.mass;
+                }
+            }
+        }
     }
 
     addToQuadtree() {

@@ -25,6 +25,10 @@ socket.on("init", (data) => {
 		world.getOrCreatePlayer(playerData);
 	}
 
+	for (let foodData of data.foods) {
+		world.getOrCreateFood(foodData);
+	}
+
 	init();
 });
 

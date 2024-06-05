@@ -1,6 +1,7 @@
 import { Rectangle } from "@timohausmann/quadtree-ts";
-import { drawBackground, drawCell } from "./graphics.js";
+import { drawBackground, drawBlob } from "./graphics.js";
 import Cell from "../common/cell.js";
+import Food from "../common/food.js";
 
 export default class Camera extends Rectangle {
     constructor(world, options = {}) {
@@ -20,8 +21,8 @@ export default class Camera extends Rectangle {
         const elements = this.world.quadtree.retrieve(this);
 
         for (const element of elements) {
-            if (element instanceof Cell) {
-                drawCell(this, element);
+            if (element instanceof Cell || element instanceof Food) {
+                drawBlob(this, element);
             }
             // TODO: render the object
         }
