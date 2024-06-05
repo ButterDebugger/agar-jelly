@@ -20,22 +20,23 @@ socket.on("init", (data) => {
 	camera = new Camera(world);
 
 	for (let playerData of data.players) {
-		let player = world.addPlayer({
+		world.getOrCreatePlayer({
 			id: playerData.id,
-			name: playerData.name
+			name: playerData.name,
+			cells: playerData.cells
 		});
-
-		for (let cellData of playerData.cells) {
-			player.addCell({
-				x: cellData.x,
-				y: cellData.y,
-				mass: cellData.mass
-			});
-		}
 	}
 
 	init();
 });
+
+socket.on("update_player", (playerData) => {
+	world.getOrCreatePlayer({
+		id: playerData.id,
+		name: playerData.name,
+		cells: playerData.cells
+	});
+})
 
 function init() {
 	// Register event handlers

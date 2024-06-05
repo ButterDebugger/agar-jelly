@@ -15,7 +15,7 @@ export default class Camera extends Rectangle {
     }
 
     render() {
-        drawBackground();
+        drawBackground(this);
 
         const elements = this.world.quadtree.retrieve(this);
 

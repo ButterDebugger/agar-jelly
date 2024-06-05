@@ -15,6 +15,7 @@ export default class Cell extends Circle {
 
         this.player.world.quadtree.insert(this);
 
+        this.id = options.id;
         this.dir = {
             x: 0,
             y: 0
@@ -45,6 +46,16 @@ export default class Cell extends Circle {
 
         this.x += this.dir.x * speed;
         this.y += this.dir.y * speed;
+    }
+
+    remove() {
+        let index = this.player.cells.indexOf(this);
+        if (index === -1) return false;
+
+        // TODO: remove cell from quadtree
+
+        this.player.cells.splice(index, 1);
+        return true;
     }
 
     // Serialize the data for sending
