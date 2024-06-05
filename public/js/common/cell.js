@@ -63,6 +63,8 @@ export default class Cell extends Circle {
 
         for (let element of elements) {
             if (element instanceof Food) {
+                if (this.mass < element.mass) continue;
+
                 let dist = Math.sqrt(Math.pow(element.x - this.x, 2) + Math.pow(element.y - this.y, 2));
 
                 if (dist < element.r + this.r) {
