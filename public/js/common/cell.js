@@ -16,6 +16,7 @@ export default class Cell extends Circle {
         this.player.world.quadtree.insert(this);
 
         this.id = options.id;
+        this.speedMultiplier = 1;
         this.dir = {
             x: 0,
             y: 0
@@ -44,8 +45,8 @@ export default class Cell extends Circle {
         // Move cell in direction
         let speed = this.speed;
 
-        this.x += this.dir.x * speed;
-        this.y += this.dir.y * speed;
+        this.x += this.dir.x * speed * this.speedMultiplier;
+        this.y += this.dir.y * speed * this.speedMultiplier;
     }
 
     remove() {

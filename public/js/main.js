@@ -22,30 +22,18 @@ socket.on("init", (data, myId) => {
 	camera = new Camera(world);
 
 	for (let playerData of data.players) {
-		world.getOrCreatePlayer({
-			id: playerData.id,
-			name: playerData.name,
-			cells: playerData.cells
-		});
+		world.getOrCreatePlayer(playerData);
 	}
 
 	init();
 });
 
 socket.on("update_self", (playerData) => {
-	yourself = world.getOrCreatePlayer({
-		id: playerData.id,
-		name: playerData.name,
-		cells: playerData.cells
-	});
+	yourself = world.getOrCreatePlayer(playerData);
 });
 
 socket.on("update_player", (playerData) => {
-	world.getOrCreatePlayer({
-		id: playerData.id,
-		name: playerData.name,
-		cells: playerData.cells
-	});
+	world.getOrCreatePlayer(playerData);
 });
 
 function init() {
@@ -65,22 +53,35 @@ function init() {
 function updatePlayer() {
 	// Calculate the angle
 	let center = yourself.getCenter();
-	let angle = Math.atan2(
-		canvas.height / 2 - keys["MouseY"],
-		canvas.width / 2 - keys["MouseX"],
-	);
-	let dir = {
-		x: Math.cos(angle),
-		y: Math.sin(angle)
-	}
-
-	// Normalize the direction vector
-	let length = Math.sqrt(dir.x * dir.x + dir.y * dir.y);
-	dir.x *= -1 / length;
-	dir.y *= -1 / length;
 
 	// Set the direction
-	yourself.setDirection(dir);
+	yourself.cells.forEach(cell => {
+		// Calculate the angle
+		let mouse = {
+			y: keys["MouseY"] - camera.y,
+			x: keys["MouseX"] - camera.x,
+		}
+		let angle = Math.atan2(
+			cell.y - mouse.y,
+			cell.x - mouse.x,
+		);
+		let dir = {
+			x: Math.cos(angle),
+			y: Math.sin(angle)
+		}
+
+		// calculate the distance
+		let dist = Math.sqrt(Math.pow(cell.x - mouse.x, 2) + Math.pow(cell.y - mouse.y, 2));
+
+		// Normalize the direction vector
+		let length = Math.sqrt(dir.x * dir.x + dir.y * dir.y);
+		dir.x *= -1 / length;
+		dir.y *= -1 / length;
+
+		cell.dir.x = dir.x;
+		cell.dir.y = dir.y;
+		cell.speedMultiplier = Math.min(dist / cell.mass, 1);
+	});
 
 	// Update the camera
 	camera.x = canvas.width / 2 - center.x;

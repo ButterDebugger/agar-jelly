@@ -15,13 +15,20 @@ export function connectionHandler(socket) {
 
         let player = world.getOrCreatePlayer({
             id: socket.id,
-            name: name
+            name: name,
+            color: generateColor()
         });
         player.addCell({
             id: randomUUID(),
             x: 0,
             y: 0,
             mass: 10
+        });
+        player.addCell({
+            id: randomUUID(),
+            x: 100,
+            y: 100,
+            mass: 20
         });
 
         let serializedPlayer = player.serialize();
@@ -31,3 +38,13 @@ export function connectionHandler(socket) {
     });
 }
 
+function generateColor() {
+    const randomInt = (min = 0, max = 1) => Math.floor(Math.random() * (max - min + 1) + min);
+
+    let color = [ 255, randomInt(36, 255), 36 ]
+        .map(value => ({ value, sort: Math.random() }))
+        .sort((a, b) => a.sort - b.sort)
+        .map(({ value }) => value);
+
+    return color.reduce((str, c) => str += c.toString(16).padStart(2, "0"), "#");
+}

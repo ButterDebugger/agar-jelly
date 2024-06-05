@@ -28,14 +28,6 @@ export default class Player {
         return !this.isDead;
     }
 
-    // Set the direction of all the cells; NOTE: should be a normalized vector
-    setDirection(direction) {
-        this.cells.forEach(cell => {
-            cell.dir.x = direction.x;
-            cell.dir.y = direction.y;
-        });
-    }
-
     update() {
         this.cells.forEach(cell => cell.update());
     }
@@ -83,6 +75,7 @@ export default class Player {
         return {
             id: this.id,
             name: this.name,
+            color: this.color,
             cells: this.cells.map(cell => cell.serialize())
         };
     }
