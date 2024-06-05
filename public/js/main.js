@@ -1,3 +1,4 @@
+import keys from "https://debutter.dev/x/js/keys.js@1.1.0";
 import {} from "./start.js";
 import Camera from "./client/camera.js";
 import World from "./common/world.js";
@@ -6,10 +7,11 @@ export const canvas = document.querySelector("canvas");
 export const ctx = canvas.getContext("2d");
 export const socket = io();
 
+let yourself = null;
 let world;
 let camera;
 
-socket.on("init", (data) => {
+socket.on("init", (data, myId) => {
 	console.log("init");
 
 	world = new World({
@@ -30,13 +32,21 @@ socket.on("init", (data) => {
 	init();
 });
 
+socket.on("update_self", (playerData) => {
+	yourself = world.getOrCreatePlayer({
+		id: playerData.id,
+		name: playerData.name,
+		cells: playerData.cells
+	});
+});
+
 socket.on("update_player", (playerData) => {
 	world.getOrCreatePlayer({
 		id: playerData.id,
 		name: playerData.name,
 		cells: playerData.cells
 	});
-})
+});
 
 function init() {
 	// Register event handlers
@@ -45,18 +55,36 @@ function init() {
 	window.addEventListener("wheel", mouseWheel);
 
 	// Render the scene
-	runAnimation(() => camera.render());
+	runAnimation(() => {
+		camera.render();
+		world.update();
+		if (yourself !== null) updatePlayer();
+	});
 }
 
-function draw() {
-	ctx.fillStyle = "#1a1d23";
-	ctx.fillRect(0, 0, canvas.width, canvas.height);
+function updatePlayer() {
+	// Calculate the angle
+	let center = yourself.getCenter();
+	let angle = Math.atan2(
+		canvas.height / 2 - keys["MouseY"],
+		canvas.width / 2 - keys["MouseX"],
+	);
+	let dir = {
+		x: Math.cos(angle),
+		y: Math.sin(angle)
+	}
 
-	ctx.fillStyle = "white";
-	ctx.strokeStyle = "white";
+	// Normalize the direction vector
+	let length = Math.sqrt(dir.x * dir.x + dir.y * dir.y);
+	dir.x *= -1 / length;
+	dir.y *= -1 / length;
 
-	game.render();
-	game.update();
+	// Set the direction
+	yourself.setDirection(dir);
+
+	// Update the camera
+	camera.x = canvas.width / 2 - center.x;
+	camera.y = canvas.height / 2 - center.y;
 }
 
 function resizeCanvas() {

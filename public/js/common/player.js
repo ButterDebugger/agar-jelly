@@ -63,6 +63,21 @@ export default class Player {
 		return cell;
 	}
 
+    getCenter() {
+        let sumX = 0;
+        let sumY = 0;
+
+        for (let cell of this.cells) {
+            sumX += cell.x;
+            sumY += cell.y;
+        }
+
+        return {
+            x: sumX / this.cells.length,
+            y: sumY / this.cells.length
+        }
+    }
+
     // Serialize the data for sending
     serialize() {
         return {

@@ -21,7 +21,7 @@ export default class Camera extends Rectangle {
 
         for (const element of elements) {
             if (element instanceof Cell) {
-                drawCell(element);
+                drawCell(this, element);
             }
             // TODO: render the object
         }

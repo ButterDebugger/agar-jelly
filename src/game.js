@@ -7,7 +7,7 @@ let world = new World();
 export function connectionHandler(socket) {
     socket.player = null;
 
-    socket.emit("init", world.serialize());
+    socket.emit("init", world.serialize(), socket.id);
 
     socket.on("join", (name) => {
         if (typeof name !== "string") return;
@@ -23,7 +23,11 @@ export function connectionHandler(socket) {
             y: 0,
             mass: 10
         });
-        io.emit("update_player", player.serialize());
+
+        let serializedPlayer = player.serialize();
+
+        socket.broadcast.emit("update_player", serializedPlayer);
+        socket.emit("update_self", serializedPlayer)
     });
 }
 

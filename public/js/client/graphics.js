@@ -27,10 +27,10 @@ export function drawBackground(camera) {
     }
 }
 
-export function drawCell(cell) {
+export function drawCell(camera, cell) {
     ctx.beginPath();
     ctx.fillStyle = cell.color;
-    ctx.arc(cell.x, cell.y, cell.r, 0, 2 * Math.PI);
+    ctx.arc(camera.x + cell.x, camera.y + cell.y, cell.r, 0, 2 * Math.PI);
     ctx.fill();
     ctx.closePath();
 }
