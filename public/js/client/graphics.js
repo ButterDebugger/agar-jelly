@@ -9,7 +9,7 @@ export function drawBackground(camera) {
     // Horizontal lines
     for (let y = camera.y % gridSpacing; y < camera.height; y += gridSpacing) {
         ctx.beginPath();
-        ctx.strokeStyle = "white";
+        ctx.strokeStyle = "rgba(255, 255, 255, 10%)";
         ctx.moveTo(0, y);
         ctx.lineTo(canvas.width, y);
         ctx.stroke();
@@ -19,7 +19,7 @@ export function drawBackground(camera) {
     // Vertical lines
     for (let x = camera.x % gridSpacing; x < camera.width; x += gridSpacing) {
         ctx.beginPath();
-        ctx.strokeStyle = "white";
+        ctx.strokeStyle = "rgba(255, 255, 255, 10%)";
         ctx.moveTo(x, 0);
         ctx.lineTo(x, canvas.height);
         ctx.stroke();
