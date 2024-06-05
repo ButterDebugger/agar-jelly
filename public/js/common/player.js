@@ -32,6 +32,12 @@ export default class Player {
         this.cells.forEach(cell => cell.update());
     }
 
+    addToQuadtree() {
+        for (let cell of this.cells) {
+            cell.addToQuadtree();
+        }
+    }
+
 	addCell(options) {
         if (typeof options.id == "string") {
             // Find a cell with a matching id

@@ -2,12 +2,15 @@ import { randomUUID } from "node:crypto";
 import World from "../public/js/common/world.js";
 import { io } from "./index.js";
 
-let world = new World();
+let world = new World({
+    width: 10000,
+    height: 10000
+});
 
 export function connectionHandler(socket) {
     socket.player = null;
 
-    socket.emit("init", world.serialize(), socket.id);
+    socket.emit("init", world.serialize());
 
     socket.on("join", (name) => {
         if (typeof name !== "string") return;

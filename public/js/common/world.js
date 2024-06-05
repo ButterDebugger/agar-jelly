@@ -2,9 +2,9 @@ import { Quadtree } from "@timohausmann/quadtree-ts";
 import Player from "./player.js";
 
 export default class World {
-    constructor() {
-        this.width = 10000;
-        this.height = 10000;
+    constructor(options = {}) {
+        this.width = options.width ?? 10000;
+        this.height = options.height ?? 10000;
 
         this.players = [];
 
@@ -17,6 +17,15 @@ export default class World {
 
     update() {
         this.players.forEach(player => player.update());
+    }
+
+    buildQuadtree() {
+        this.quadtree.clear();
+
+        // Readd all players to the quadtree
+        for (let player of this.players) {
+            player.addToQuadtree();
+        }
     }
 
     getOrCreatePlayer(options) {

@@ -11,7 +11,7 @@ let yourself = null;
 let world;
 let camera;
 
-socket.on("init", (data, myId) => {
+socket.on("init", (data) => {
 	console.log("init");
 
 	world = new World({
@@ -44,6 +44,7 @@ function init() {
 
 	// Render the scene
 	runAnimation(() => {
+		world.buildQuadtree();
 		camera.render();
 		world.update();
 		if (yourself !== null) updatePlayer();
@@ -58,8 +59,8 @@ function updatePlayer() {
 	yourself.cells.forEach(cell => {
 		// Calculate the angle
 		let mouse = {
-			y: keys["MouseY"] - camera.y,
-			x: keys["MouseX"] - camera.x,
+			y: keys["MouseY"] + camera.y,
+			x: keys["MouseX"] + camera.x,
 		}
 		let angle = Math.atan2(
 			cell.y - mouse.y,
@@ -84,8 +85,8 @@ function updatePlayer() {
 	});
 
 	// Update the camera
-	camera.x = canvas.width / 2 - center.x;
-	camera.y = canvas.height / 2 - center.y;
+	camera.x = center.x - canvas.width / 2;
+	camera.y = center.y - canvas.height / 2;
 }
 
 function resizeCanvas() {

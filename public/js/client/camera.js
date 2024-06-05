@@ -8,7 +8,7 @@ export default class Camera extends Rectangle {
             x: options.x ?? 0,
             y: options.y ?? 0,
             width: options.width ?? window.innerWidth,
-            height: options.height ?? window.innerHeight,
+            height: options.height ?? window.innerHeight
         });
 
 		Object.defineProperty(this, "world", { value: world });

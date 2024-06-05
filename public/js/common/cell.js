@@ -13,8 +13,6 @@ export default class Cell extends Circle {
 
 		Object.defineProperty(this, "player", { value: player });
 
-        this.player.world.quadtree.insert(this);
-
         this.id = options.id;
         this.speedMultiplier = 1;
         this.dir = {
@@ -47,13 +45,23 @@ export default class Cell extends Circle {
 
         this.x += this.dir.x * speed * this.speedMultiplier;
         this.y += this.dir.y * speed * this.speedMultiplier;
+
+        this.handleWallCollision();
+    }
+
+    // Prevents the cell from breaching the world's borders
+    handleWallCollision() {
+        this.x = Math.max(0, Math.min(this.player.world.width, this.x));
+        this.y = Math.max(0, Math.min(this.player.world.height, this.y));
+    }
+
+    addToQuadtree() {
+        this.player.world.quadtree.insert(this);
     }
 
     remove() {
         let index = this.player.cells.indexOf(this);
         if (index === -1) return false;
-
-        // TODO: remove cell from quadtree
 
         this.player.cells.splice(index, 1);
         return true;
