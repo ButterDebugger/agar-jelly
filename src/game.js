@@ -1,10 +1,12 @@
 import { randomUUID } from "node:crypto";
+import ticker from "../public/js/common/ticker.js";
 import World from "../public/js/common/world.js";
 import { io } from "./index.js";
 
 const randomInt = (min = 0, max = 1) => Math.floor(Math.random() * (max - min + 1) + min);
 
-let world = new World({
+const tps = 60;
+const world = new World({
     width: 10000,
     height: 10000
 });
@@ -19,10 +21,25 @@ for (let i = 0; i < 1000; i++) {
     });
 }
 
+export function init() {
+    ticker(tps, (delta) => {
+        // Build the quadtree
+        world.buildQuadtree();
+
+        // Tick objects
+        world.update(delta);
+
+        io.volatile.emit("tick_players", world.players.map(p => p.serialize()));
+    });
+}
+
 export function connectionHandler(socket) {
     socket.player = null;
 
-    socket.emit("init", world.serialize());
+    socket.emit("init", {
+        tps: tps,
+        ...world.serialize()
+    });
 
     socket.on("join", (name) => {
         if (typeof name !== "string") return;
@@ -40,10 +57,24 @@ export function connectionHandler(socket) {
             mass: 20
         });
 
+        socket.player = player;
+
         let serializedPlayer = player.serialize();
 
         socket.broadcast.emit("update_player", serializedPlayer);
-        socket.emit("update_self", serializedPlayer)
+        socket.emit("update_self", serializedPlayer);
+    });
+
+    socket.on("direct_cells", (data) => {
+        if (!socket.player) return;
+
+        for (let cell of socket.player.cells) {
+            if (cell.id in data) {
+                cell.dir.x = data[cell.id].x;
+                cell.dir.y = data[cell.id].y;
+                cell.speedMultiplier = data[cell.id].speedMultiplier;
+            }
+        }
     });
 }
 

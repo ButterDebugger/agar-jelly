@@ -28,8 +28,8 @@ export default class Player {
         return !this.isDead;
     }
 
-    update() {
-        this.cells.forEach(cell => cell.update());
+    update(delta) {
+        this.cells.forEach(cell => cell.update(delta));
     }
 
     addToQuadtree() {
@@ -49,6 +49,7 @@ export default class Player {
                 if (options.y) cell.y = options.y;
                 if (options.mass) cell.mass = options.mass;
                 if (options.dir) cell.dir = options.dir;
+                if (options.speedMultiplier) cell.speedMultiplier = options.speedMultiplier;
 
                 // Return the existing cell
                 return cell;

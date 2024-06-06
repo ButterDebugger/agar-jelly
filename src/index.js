@@ -1,7 +1,7 @@
 import express from "express";
 import http from "node:http";
 import { Server } from "socket.io";
-import { connectionHandler } from "./game.js";
+import { connectionHandler, init } from "./game.js";
 
 const app = express();
 const server = http.createServer(app);
@@ -14,6 +14,8 @@ io.on("connection", (...args) => {
 
 	connectionHandler(...args);
 });
+
+init();
 
 server.listen(3000, () => {
 	console.log("listening on *:3000");

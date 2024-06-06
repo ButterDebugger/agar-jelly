@@ -17,8 +17,8 @@ export default class World {
         });
     }
 
-    update() {
-        this.players.forEach(player => player.update());
+    update(delta) {
+        this.players.forEach(player => player.update(delta));
     }
 
     buildQuadtree() {
@@ -43,7 +43,7 @@ export default class World {
                 if (options.name) player.name = options.name;
                 if (options.color) player.color = options.color;
                 if (options.cells) {
-                    let cellIds = playerData.cells.map(c => c.id);
+                    let cellIds = options.cells.map(c => c.id);
 
                     for (let cell of player.cells) {
                         if (!cellIds.includes(cell.id)) {
@@ -51,11 +51,12 @@ export default class World {
                         }
                     }
 
-                    for (let cellData of playerData.cells) {
+                    for (let cellData of options.cells) {
                         player.addCell({
                             id: cellData.id,
                             x: cellData.x,
                             y: cellData.y,
+                            dir: cellData.dir,
                             mass: cellData.mass
                         });
                     }

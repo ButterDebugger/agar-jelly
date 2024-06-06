@@ -2,17 +2,21 @@ import keys from "https://debutter.dev/x/js/keys.js@1.1.0";
 import {} from "./start.js";
 import Camera from "./client/camera.js";
 import World from "./common/world.js";
+import ticker from "./common/ticker.js";
 
 export const canvas = document.querySelector("canvas");
 export const ctx = canvas.getContext("2d");
 export const socket = io();
 
 let yourself = null;
+let tps;
 let world;
 let camera;
 
-socket.on("init", (data) => {
+socket.once("init", (data) => {
 	console.log("init");
+
+	tps = data.tps;
 
 	world = new World({
 		width: data.width,
@@ -40,6 +44,12 @@ socket.on("update_player", (playerData) => {
 	world.getOrCreatePlayer(playerData);
 });
 
+socket.on("tick_players", (players) => {
+	for (let playerData of players) {
+		world.getOrCreatePlayer(playerData);
+	}
+});
+
 function init() {
 	// Register event handlers
 	window.addEventListener("resize", resizeCanvas);
@@ -47,10 +57,15 @@ function init() {
 	window.addEventListener("wheel", mouseWheel);
 
 	// Render the scene
-	runAnimation(() => {
+	ticker(tps, (delta) => {
+		// Build the quadtree
 		world.buildQuadtree();
+
+		// Render elements
 		camera.render();
-		world.update();
+
+		// Tick objects
+		world.update(delta);
 		if (yourself !== null) updatePlayer();
 	});
 }
@@ -60,6 +75,9 @@ function updatePlayer() {
 	let center = yourself.getCenter();
 
 	// Set the direction
+	let cellDirectionData = {};
+	let cellChanged = false;
+
 	yourself.cells.forEach(cell => {
 		// Calculate the angle
 		let mouse = {
@@ -83,14 +101,28 @@ function updatePlayer() {
 		dir.x *= -1 / length;
 		dir.y *= -1 / length;
 
+		let speedMultiplier = Math.min(dist / cell.mass, 1);
+
+		// Check if the direction is not different
+		if (!(cell.dir.x === dir.x && cell.dir.y === dir.y && cell.speedMultiplier === speedMultiplier)) {
+			cellDirectionData[cell.id] = {
+				x: dir.x,
+				y: dir.y,
+				speedMultiplier: speedMultiplier
+			};
+			cellChanged = true;
+		}
+
 		cell.dir.x = dir.x;
 		cell.dir.y = dir.y;
-		cell.speedMultiplier = Math.min(dist / cell.mass, 1);
+		cell.speedMultiplier = speedMultiplier;
 	});
 
 	// Update the camera
 	camera.x = center.x - canvas.width / 2;
 	camera.y = center.y - canvas.height / 2;
+
+	if (cellChanged) socket.emit("direct_cells", cellDirectionData);
 }
 
 function resizeCanvas() {
@@ -106,26 +138,4 @@ function mouseWheel({ wheelDeltaY }) {
 		game.camera.scrollZoom -= 100;
 	}
 	game.camera.scrollZoom = constrain(game.camera.scrollZoom, 0, 9000);
-}
-
-
-
-
-
-
-
-
-function runAnimation(animation) { // TODO: replace code with import
-	let lastTime = null;
-	const frame = async (time) => {
-		let timeStep = lastTime === null ? 0 : 1000 / (time - lastTime);
-
-		if ((await animation(time, timeStep)) === false) {
-			return; // Stop animation
-		}
-
-		lastTime = time;
-		requestAnimationFrame(frame); // Request another frame
-	};
-	requestAnimationFrame(frame); // Begin animation
 }

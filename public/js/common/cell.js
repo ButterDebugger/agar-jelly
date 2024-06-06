@@ -15,7 +15,7 @@ export default class Cell extends Circle {
 		Object.defineProperty(this, "player", { value: player });
 
         this.id = options.id;
-        this.speedMultiplier = 1;
+        this.speedMultiplier = options.speedMultiplier ?? 1;
         this.dir = {
             x: 0,
             y: 0
@@ -40,12 +40,12 @@ export default class Cell extends Circle {
         return this.player.color;
     }
 
-    update() {
+    update(delta) {
         // Move cell in direction
         let speed = this.speed;
 
-        this.x += this.dir.x * speed * this.speedMultiplier;
-        this.y += this.dir.y * speed * this.speedMultiplier;
+        this.x += this.dir.x * speed * this.speedMultiplier * delta;
+        this.y += this.dir.y * speed * this.speedMultiplier * delta;
 
         this.handleWallCollision();
         this.handleFoodCollision();
@@ -90,6 +90,7 @@ export default class Cell extends Circle {
     // Serialize the data for sending
     serialize() {
         return {
+            id: this.id,
             x: this.x,
             y: this.y,
             mass: this.mass,
