@@ -2,15 +2,15 @@ import { Rectangle } from "@timohausmann/quadtree-ts";
 import { drawBackground, drawBlob } from "./graphics.js";
 import Cell from "../common/cell.js";
 import Food from "../common/food.js";
-import { ctx } from "../main.js";
+import { canvas, ctx } from "../main.js";
 
 export default class Camera extends Rectangle {
-    constructor(world, options = {}) {
+    constructor(world) {
         super({
-            x: options.x ?? 0,
-            y: options.y ?? 0,
-            width: options.width ?? window.innerWidth,
-            height: options.height ?? window.innerHeight
+            x: 0,
+            y: 0,
+            width: canvas.width,
+            height: canvas.height,
         });
 
 		Object.defineProperty(this, "world", { value: world });

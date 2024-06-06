@@ -1,10 +1,10 @@
-import { canvas, ctx } from "../main.js";
+import { ctx } from "../main.js";
 
 const gridSpacing = 100;
 
 export function drawBackground(camera) {
     ctx.fillStyle = "#1d1f25";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillRect(0, 0, camera.width, camera.height);
 
     let startX = Math.max(-camera.x, 0);
     let startY = Math.max(-camera.y, 0);

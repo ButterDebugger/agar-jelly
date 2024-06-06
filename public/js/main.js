@@ -126,11 +126,13 @@ function updatePlayer() {
 }
 
 function resizeCanvas() {
-	camera.width = canvas.width = window.innerWidth;
-	camera.height = canvas.height = window.innerHeight;
+	canvas.width = window.innerWidth;
+	canvas.height = window.innerHeight;
 }
 
-function mouseWheel({ wheelDeltaY }) {
+function mouseWheel({ ctrlKey, wheelDeltaY }) {
+	if (ctrlKey) return;
+
 	if (wheelDeltaY < 0) {
 		console.log("out");
 		camera.zoom *= 0.9;
