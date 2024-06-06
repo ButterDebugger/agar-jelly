@@ -131,11 +131,12 @@ function resizeCanvas() {
 }
 
 function mouseWheel({ wheelDeltaY }) {
-	let toBottom = wheelDeltaY < 0;
-	if (toBottom) {
-		game.camera.scrollZoom += 100;
+	if (wheelDeltaY < 0) {
+		console.log("out");
+		camera.zoom *= 0.9;
 	} else {
-		game.camera.scrollZoom -= 100;
+		console.log("in");
+		camera.zoom *= 1.1;
 	}
-	game.camera.scrollZoom = constrain(game.camera.scrollZoom, 0, 9000);
+	// game.camera.scrollZoom = constrain(game.camera.scrollZoom, 0, 9000);
 }
