@@ -37,7 +37,25 @@ export default class Camera extends Rectangle {
 
         for (const element of elements) {
             if (element instanceof Cell || element instanceof Food) {
-                drawBlob(this, element);
+                if (typeof element.was == "undefined") element.was = {};
+
+                // TODO: find a better way to smooth the position because lerping simply reduces it
+                let am = {
+                    x: ((element.was.x ?? element.x) + element.x) / 2,
+                    y: ((element.was.y ?? element.y) + element.y) / 2,
+                    r: ((element.was.r ?? element.r) * 5 + element.r) / 6,
+                }
+
+                drawBlob(this, {
+                    color: element.color,
+                    x: am.x,
+                    y: am.y,
+                    r: am.r,
+                });
+
+                element.was.x = am.x;
+                element.was.y = am.y;
+                element.was.r = am.r;
             }
         }
         ctx.restore();

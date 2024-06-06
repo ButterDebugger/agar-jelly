@@ -67,7 +67,7 @@ export default class Cell extends Circle {
 
                 let dist = Math.sqrt(Math.pow(element.x - this.x, 2) + Math.pow(element.y - this.y, 2));
 
-                if (dist < element.r + this.r) {
+                if (dist < this.r - element.r / 2) {
                     element.remove();
                     this.mass += element.mass;
                 }
