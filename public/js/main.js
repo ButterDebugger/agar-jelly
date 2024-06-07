@@ -81,8 +81,8 @@ function updatePlayer() {
 	yourself.cells.forEach(cell => {
 		// Calculate the angle
 		let mouse = {
-			y: keys["MouseY"] + camera.y,
-			x: keys["MouseX"] + camera.x,
+			y: keys["MouseY"] + camera.offsetY,
+			x: keys["MouseX"] + camera.offsetX,
 		}
 		let angle = Math.atan2(
 			cell.y - mouse.y,
@@ -119,23 +119,27 @@ function updatePlayer() {
 	});
 
 	// Update the camera
-	camera.x = center.x - canvas.width / 2;
-	camera.y = center.y - canvas.height / 2;
+	camera.offsetX = center.x - canvas.width / 2;
+	camera.offsetY = center.y - canvas.height / 2;
 
 	if (cellChanged) socket.emit("direct_cells", cellDirectionData);
 }
 
 function resizeCanvas() {
-	camera.width = canvas.width = window.innerWidth;
-	camera.height = canvas.height = window.innerHeight;
+	canvas.width = window.innerWidth;
+	canvas.height = window.innerHeight;
+	camera.setDimensions(canvas.width, canvas.height);
 }
 
-function mouseWheel({ wheelDeltaY }) {
-	let toBottom = wheelDeltaY < 0;
-	if (toBottom) {
-		game.camera.scrollZoom += 100;
+function mouseWheel({ ctrlKey, wheelDeltaY }) {
+	if (ctrlKey) return;
+
+	if (wheelDeltaY < 0) {
+		console.log("out");
+		camera.zoom *= 0.9;
 	} else {
-		game.camera.scrollZoom -= 100;
+		console.log("in");
+		camera.zoom *= 1.1;
 	}
-	game.camera.scrollZoom = constrain(game.camera.scrollZoom, 0, 9000);
+	// game.camera.scrollZoom = constrain(game.camera.scrollZoom, 0, 9000);
 }
