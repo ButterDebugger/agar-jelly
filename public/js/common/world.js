@@ -19,6 +19,7 @@ export default class World {
 
     update(delta) {
         this.players.forEach(player => player.update(delta));
+        this.foods.forEach(food => food.update(delta));
     }
 
     buildQuadtree() {
@@ -84,6 +85,10 @@ export default class World {
                 if (options.y) food.y = options.y;
                 if (options.mass) food.mass = options.mass;
                 if (options.color) food.color = options.color;
+                if (options.vel) {
+                    food.vel.x = options.vel.x;
+                    food.vel.y = options.vel.y;
+                }
 
                 // Return the existing food
                 return food;

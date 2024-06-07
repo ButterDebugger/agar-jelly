@@ -32,7 +32,7 @@ export default class Cell extends Circle {
 
     // Based on the mass, calculate the speed
     get speed() {
-        return Math.max(Math.min(4.2 * Math.pow(this.mass / 50, -0.319), maxSpeed), minSpeed);
+        return (this.mass / Math.pow(this.mass, 1.44)) * 10;
     }
 
     // Get parent player color

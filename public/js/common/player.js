@@ -1,5 +1,8 @@
 import Cell from "./cell.js";
 
+export const minEjectMass = 20;
+export const ejectAmount = 10;
+
 export default class Player {
     constructor(world, options = {}) {
 		Object.defineProperty(this, "world", { value: world });

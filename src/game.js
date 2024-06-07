@@ -1,6 +1,7 @@
-import { randomUUID } from "node:crypto";
+import { v4 as randomUUID } from "uuid";
 import ticker from "../public/js/common/ticker.js";
 import World from "../public/js/common/world.js";
+import { minEjectMass, ejectAmount } from "../public/js/common/player.js";
 import { io } from "./index.js";
 
 const randomInt = (min = 0, max = 1) => Math.floor(Math.random() * (max - min + 1) + min);
@@ -75,6 +76,33 @@ export function connectionHandler(socket) {
                 cell.speedMultiplier = data[cell.id].speedMultiplier;
             }
         }
+    });
+
+    socket.on("eject", () => {
+        if (!socket.player) return;
+
+        let newFoods = [];
+
+        for (let cell of socket.player.cells) {
+            if (cell.mass >= minEjectMass + ejectAmount) {
+                let food = world.getOrCreateFood({
+                    id: randomUUID(),
+                    x: cell.x + cell.dir.x * cell.mass,
+                    y: cell.y + cell.dir.y * cell.mass,
+                    color: socket.player.color,
+                    mass: ejectAmount,
+                    vel: {
+                        x: cell.dir.x * 10,
+                        y: cell.dir.y * 10
+                    }
+                });
+                newFoods.push(food.serialize());
+
+                cell.mass -= ejectAmount;
+            }
+        }
+
+        io.emit("spawn_foods", newFoods)
     });
 }
 

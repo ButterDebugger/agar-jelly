@@ -50,11 +50,18 @@ socket.on("tick_players", (players) => {
 	}
 });
 
+socket.on("spawn_foods", (foods) => {
+	for (let foodData of foods) {
+		world.getOrCreateFood(foodData);
+	}
+})
+
 function init() {
 	// Register event handlers
 	window.addEventListener("resize", resizeCanvas);
 	resizeCanvas();
 	window.addEventListener("wheel", mouseWheel);
+	window.addEventListener("keypress", keyDown);
 
 	// Render the scene
 	ticker(tps, (delta) => {
@@ -129,6 +136,12 @@ function resizeCanvas() {
 	canvas.width = window.innerWidth;
 	canvas.height = window.innerHeight;
 	camera.setDimensions(canvas.width, canvas.height);
+}
+
+function keyDown() {
+	if (keys["KeyW"]) {
+		socket.emit("eject");
+	}
 }
 
 function mouseWheel({ ctrlKey, wheelDeltaY }) {

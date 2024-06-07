@@ -13,6 +13,7 @@
   "dependencies": {
     "@timohausmann/quadtree-ts": "^2.2.2",
     "express": "^4.19.2",
-    "socket.io": "^4.7.5"
+    "socket.io": "^4.7.5",
+    "uuid": "^9.0.1"
   }
 }

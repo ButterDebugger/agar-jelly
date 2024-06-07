@@ -1,5 +1,7 @@
 import { Circle } from "@timohausmann/quadtree-ts";
 
+const friction = 0.94;
+
 export default class Food extends Circle {
     constructor(world, options = {}) {
         super({
@@ -12,6 +14,10 @@ export default class Food extends Circle {
 
         this.id = options.id;
         this.color = options.color;
+        this.vel = {
+            x: options?.vel?.x ?? 0,
+            y: options?.vel?.y ?? 0,
+        };
     }
 
     // Map circle radius to the variable "mass"
@@ -20,6 +26,22 @@ export default class Food extends Circle {
     }
     set mass(value) {
         this.r = value;
+    }
+
+    update(delta) {
+        this.x += this.vel.x * delta;
+        this.y += this.vel.y * delta;
+
+        this.vel.x *= Math.pow(friction, delta);
+        this.vel.y *= Math.pow(friction, delta);
+
+        this.handleWallCollision();
+    }
+
+    // Prevents the cell from breaching the world's borders
+    handleWallCollision() {
+        this.x = Math.max(0, Math.min(this.world.width, this.x));
+        this.y = Math.max(0, Math.min(this.world.height, this.y));
     }
 
     addToQuadtree() {
@@ -41,7 +63,8 @@ export default class Food extends Circle {
             x: this.x,
             y: this.y,
             mass: this.mass,
-            color: this.color
+            color: this.color,
+            vel: this.vel
         };
     }
 }
