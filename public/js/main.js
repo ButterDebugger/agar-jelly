@@ -81,8 +81,8 @@ function updatePlayer() {
 	yourself.cells.forEach(cell => {
 		// Calculate the angle
 		let mouse = {
-			y: keys["MouseY"] + camera.y,
-			x: keys["MouseX"] + camera.x,
+			y: keys["MouseY"] + camera.offsetY,
+			x: keys["MouseX"] + camera.offsetX,
 		}
 		let angle = Math.atan2(
 			cell.y - mouse.y,
@@ -119,8 +119,8 @@ function updatePlayer() {
 	});
 
 	// Update the camera
-	camera.x = center.x - canvas.width / 2;
-	camera.y = center.y - canvas.height / 2;
+	camera.offsetX = center.x - canvas.width / 2;
+	camera.offsetY = center.y - canvas.height / 2;
 
 	if (cellChanged) socket.emit("direct_cells", cellDirectionData);
 }
@@ -128,6 +128,7 @@ function updatePlayer() {
 function resizeCanvas() {
 	canvas.width = window.innerWidth;
 	canvas.height = window.innerHeight;
+	camera.setDimensions(canvas.width, canvas.height);
 }
 
 function mouseWheel({ ctrlKey, wheelDeltaY }) {

@@ -5,6 +5,12 @@ import Food from "../common/food.js";
 import { canvas, ctx } from "../main.js";
 
 export default class Camera extends Rectangle {
+    #scale = 1;
+    #offset = {
+        x: 0,
+        y: 0,
+    }
+
     constructor(world) {
         super({
             x: 0,
@@ -13,23 +19,56 @@ export default class Camera extends Rectangle {
             height: canvas.height,
         });
 
-		Object.defineProperty(this, "world", { value: world });
+        Object.defineProperty(this, "world", { value: world });
 
-        this.scale = 1;
+        this.size = {
+            width: canvas.width,
+            height: canvas.height,
+        }
     }
 
     get zoom() {
-        return this.scale;
+        return this.#scale;
     }
     set zoom(value) {
-        this.scale = Math.max(0.1, value);
+        this.#scale = Math.min(2, value);
+        this.#updateBounds();
+    }
+
+    get offsetX() {
+        return this.#offset.x;
+    }
+    set offsetX(value) {
+        this.#offset.x = value;
+        this.#updateBounds();
+    }
+
+    get offsetY() {
+        return this.#offset.y;
+    }
+    set offsetY(value) {
+        this.#offset.y = value;
+        this.#updateBounds();
+    }
+
+    setDimensions(width, height) {
+        this.size.width = width;
+        this.size.height = height;
+        this.#updateBounds();
+    }
+
+    #updateBounds() {
+        this.width = this.size.width * (1 / this.#scale);
+        this.height = this.size.height * (1 / this.#scale);
+        this.x = this.width / 2 * this.zoom - this.width / 2 + this.#offset.x;
+        this.y = this.height / 2 * this.zoom - this.height / 2 + this.#offset.y;
     }
 
     render() {
         ctx.save();
-        ctx.translate(this.width / 2, this.height / 2);
+        ctx.translate(this.size.width / 2, this.size.height / 2);
         ctx.scale(this.zoom, this.zoom);
-        ctx.translate(this.width / -2, this.height / -2);
+        ctx.translate(this.size.width / -2, this.size.height / -2);
 
         drawBackground(this);
 

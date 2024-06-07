@@ -4,29 +4,31 @@ const gridSpacing = 100;
 
 export function drawBackground(camera) {
     ctx.fillStyle = "#1d1f25";
-    ctx.fillRect(0, 0, camera.width, camera.height);
+    ctx.fillRect(camera.x - camera.offsetX, camera.y - camera.offsetY, camera.width, camera.height);
 
-    let startX = Math.max(-camera.x, 0);
-    let startY = Math.max(-camera.y, 0);
-    let maxWidth = Math.min(camera.world.width, camera.width + camera.x) - camera.x;
-    let maxHeight = Math.min(camera.world.height, camera.height + camera.y) - camera.y;
+    let startX = Math.max(-camera.offsetX, camera.x - camera.offsetX);
+    let startY = Math.max(-camera.offsetY, camera.y - camera.offsetY);
+    let endX = Math.min(camera.world.width - camera.offsetX, camera.width);
+    let endY = Math.min(camera.world.height - camera.offsetY, camera.height);
+
+    // TODO: limit the amount of lines to be drawn
 
     // Horizontal lines
-    for (let y = -camera.y; y <= maxHeight; y += gridSpacing) {
+    for (let i = 0; i <= camera.world.height / gridSpacing; i++) {
         ctx.beginPath();
         ctx.strokeStyle = "rgba(255, 255, 255, 10%)";
-        ctx.moveTo(startX, y);
-        ctx.lineTo(maxWidth, y);
+        ctx.moveTo(startX, i * gridSpacing - camera.offsetY);
+        ctx.lineTo(endX, i * gridSpacing - camera.offsetY);
         ctx.stroke();
         ctx.closePath();
     }
 
     // Vertical lines
-    for (let x = -camera.x; x <= maxWidth; x += gridSpacing) {
+    for (let i = 0; i <= camera.world.width / gridSpacing; i++) {
         ctx.beginPath();
         ctx.strokeStyle = "rgba(255, 255, 255, 10%)";
-        ctx.moveTo(x, startY);
-        ctx.lineTo(x, maxHeight);
+        ctx.moveTo(i * gridSpacing - camera.offsetX, startY);
+        ctx.lineTo(i * gridSpacing - camera.offsetX, endY);
         ctx.stroke();
         ctx.closePath();
     }
@@ -35,7 +37,7 @@ export function drawBackground(camera) {
     ctx.beginPath();
     ctx.strokeStyle = "#9a1b1d";
     ctx.lineWidth = 3;
-    ctx.rect(-camera.x, -camera.y, camera.world.width, camera.world.height);
+    ctx.rect(-camera.offsetX, -camera.offsetY, camera.world.width, camera.world.height);
     ctx.stroke();
     ctx.closePath();
 }
@@ -43,7 +45,7 @@ export function drawBackground(camera) {
 export function drawBlob(camera, blob) {
     ctx.beginPath();
     ctx.fillStyle = blob.color;
-    ctx.arc(blob.x - camera.x, blob.y - camera.y, blob.r, 0, 2 * Math.PI);
+    ctx.arc(blob.x - camera.offsetX, blob.y - camera.offsetY, blob.r, 0, 2 * Math.PI);
     ctx.fill();
     ctx.closePath();
 }
