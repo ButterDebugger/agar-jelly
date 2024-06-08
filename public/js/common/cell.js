@@ -1,10 +1,11 @@
 import { Circle } from "@timohausmann/quadtree-ts";
 import Food from "./food.js";
-import World, { tps } from "./world.js";
 
 export const maxSpeed = 10;
 export const minSpeed = 1;
 export const minMassDecay = 20;
+export const massDecayPercent = 0.00003;
+export const consumePercent = 0.85;
 
 export default class Cell extends Circle {
     constructor(player, options = {}) {
@@ -66,7 +67,7 @@ export default class Cell extends Circle {
 
         for (let element of elements) {
             if (element instanceof Food) {
-                if (this.mass < element.mass) continue;
+                if (this.mass * consumePercent <= element.mass) continue;
 
                 let dist = Math.sqrt(Math.pow(element.x - this.x, 2) + Math.pow(element.y - this.y, 2));
 
@@ -80,7 +81,7 @@ export default class Cell extends Circle {
 
     handleMassDecay(delta) {
         if (this.mass > minMassDecay) {
-            let decay = this.mass * (0.00003 / 60 * tps) * delta;
+            let decay = this.mass * massDecayPercent * delta;
 
             this.mass = Math.max(this.mass - decay, minMassDecay);
         }
