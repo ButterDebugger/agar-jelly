@@ -4,6 +4,7 @@ import Player from "./player.js";
 import Food from "./food.js";
 
 export const tps = 60;
+export const friction = 0.94;
 
 export default class World extends EventEmitter {
     constructor(options = {}) {

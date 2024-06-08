@@ -1,6 +1,5 @@
 import { Circle } from "@timohausmann/quadtree-ts";
-
-const friction = 0.94;
+import { friction } from "./world.js";
 
 export default class Food extends Circle {
     constructor(world, options = {}) {

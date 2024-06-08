@@ -1,12 +1,12 @@
 import { Circle } from "@timohausmann/quadtree-ts";
 import Food from "./food.js";
+import { friction } from "./world.js";
+import { consumeGainPercent, consumePercent } from "./player.js";
 
 export const maxSpeed = 10;
 export const minSpeed = 1;
 export const minMassDecay = 20;
 export const massDecayPercent = 0.00003;
-export const consumePercent = 0.85;
-export const consumeGainPercent = 0.80;
 
 export default class Cell extends Circle {
     constructor(player, options = {}) {
@@ -23,6 +23,10 @@ export default class Cell extends Circle {
         this.dir = {
             x: 0,
             y: 0
+        };
+        this.vel = {
+            x: options?.vel?.x ?? 0,
+            y: options?.vel?.y ?? 0,
         };
     }
 
@@ -56,6 +60,13 @@ export default class Cell extends Circle {
 
         this.x += this.dir.x * speed * this.speedMultiplier * delta;
         this.y += this.dir.y * speed * this.speedMultiplier * delta;
+
+        // Apply velocity
+        this.x += this.vel.x * delta;
+        this.y += this.vel.y * delta;
+
+        this.vel.x *= Math.pow(friction, delta);
+        this.vel.y *= Math.pow(friction, delta);
 
         // Prevents the cell from breaching the world's borders
         this.x = Math.max(0, Math.min(this.player.world.width, this.x));

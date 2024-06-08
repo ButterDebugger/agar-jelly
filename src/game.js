@@ -1,7 +1,7 @@
 import { v4 as randomUUID } from "uuid";
 import ticker from "../public/js/common/ticker.js";
 import World, { tps } from "../public/js/common/world.js";
-import { minEjectMass, ejectAmount } from "../public/js/common/player.js";
+import { minEjectMass, ejectAmount, minSplitMass } from "../public/js/common/player.js";
 import { io } from "./index.js";
 
 const randomInt = (min = 0, max = 1) => Math.floor(Math.random() * (max - min + 1) + min);
@@ -103,6 +103,28 @@ export function connectionHandler(socket) {
         }
 
         io.emit("spawn_foods", newFoods)
+    });
+
+    socket.on("split", () => {
+        if (!socket.player) return;
+
+        for (let cell of [...socket.player.cells]) {
+            if (cell.mass >= minSplitMass) {
+                socket.player.addCell({
+                    id: randomUUID(),
+                    x: cell.x + cell.dir.x * cell.mass,
+                    y: cell.y + cell.dir.y * cell.mass,
+                    mass: cell.mass / 2,
+                    vel: {
+                        x: cell.dir.x * 10,
+                        y: cell.dir.y * 10
+                    }
+                });
+                cell.mass /= 2;
+
+                io.emit("update_player", socket.player.serialize());
+            }
+        }
     });
 }
 

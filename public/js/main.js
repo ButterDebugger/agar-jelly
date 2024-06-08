@@ -147,6 +147,9 @@ function keyDown() {
 	if (keys["KeyW"]) {
 		socket.emit("eject");
 	}
+	if (keys["Space"]) {
+		socket.emit("split");
+	}
 }
 
 function mouseWheel({ ctrlKey, wheelDeltaY }) {
