@@ -147,7 +147,7 @@ function generateFood(amount = 1) {
             x: randomInt(0, world.width),
             y: randomInt(0, world.height),
             color: generateColor(),
-            mass: randomInt(10, 20)
+            mass: 10
         }));
     }
 
