@@ -53,11 +53,15 @@ socket.on("spawn_foods", (foods) => {
 	}
 });
 
-socket.on("remove_player", (id) => { // NOTE: not used yet
+socket.on("remove_player", (id) => {
 	world.removePlayer(id);
 });
 
-socket.on("remove_food", (id) => { // NOTE: not used yet
+socket.on("death", () => {
+	window.location.reload(); // TODO: put up death screen and not reload
+});
+
+socket.on("remove_food", (id) => {
 	world.removeFood(id);
 });
 

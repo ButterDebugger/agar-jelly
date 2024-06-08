@@ -22,8 +22,12 @@ for (let i = 0; i < 1000; i++) {
 }
 
 export function init() {
-    world.on("remove_food", (id) => {
-        io.emit("remove_food", id);
+    world.on("remove_food", (food) => {
+        io.emit("remove_food", food.id);
+    });
+    world.on("remove_player", (player) => {
+        player.socket.broadcast.emit("remove_player", player.id);
+        player.socket.emit("death");
     });
 
     ticker(tps, (delta) => {
@@ -58,6 +62,7 @@ export function connectionHandler(socket) {
             mass: 20
         });
 
+        player.socket = socket;
         socket.player = player;
 
         let serializedPlayer = player.serialize();
@@ -126,6 +131,13 @@ export function connectionHandler(socket) {
             }
         }
     });
+
+    socket.on("disconnect", () => {
+        if (!socket.player) return;
+
+        socket.broadcast.emit("remove_player", socket.player.id);
+        socket.player = null;
+    })
 }
 
 function generateColor() {

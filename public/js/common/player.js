@@ -56,23 +56,10 @@ export default class Player {
                 let cell1 = this.cells[i];
                 let cell2 = this.cells[j];
 
-                let dist = Math.sqrt(Math.pow(cell1.x - cell2.x, 2) + Math.pow(cell1.y - cell2.y, 2));
-
                 // If the two cells are able to eat each other, do not apply static collision and merge
-                if (cell1.mass * consumePercent > cell2.mass) {
-                    if (dist < cell1.r - cell2.r / 2) {
-                        cell2.remove();
-                        cell1.mass += cell2.mass * consumeGainPercent;
-                    }
-                    continue;
-                }
-                if (cell2.mass * consumePercent > cell1.mass) {
-                    if (dist < cell2.r - cell1.r / 2) {
-                        cell1.remove();
-                        cell2.mass += cell1.mass * consumeGainPercent;
-                    }
-                    continue;
-                }
+                if (cell1.mass * consumePercent > cell2.mass || cell2.mass * consumePercent > cell1.mass) continue;
+
+                let dist = Math.sqrt(Math.pow(cell1.x - cell2.x, 2) + Math.pow(cell1.y - cell2.y, 2));
 
                 if (dist < cell1.r + cell2.r) {
                     let angle = Math.atan2(
@@ -143,6 +130,16 @@ export default class Player {
             x: sumX / this.cells.length,
             y: sumY / this.cells.length
         }
+    }
+
+    removeCell(id) {
+        let index = this.cells.findIndex(c => c.id === id);
+        if (index === -1) return false;
+
+        let cell = this.cells[index];
+        this.cells.splice(index, 1);
+        this.world.emit("remove_cell", cell);
+        return true;
     }
 
     // Serialize the data for sending

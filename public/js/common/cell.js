@@ -78,7 +78,7 @@ export default class Cell extends Circle {
         const elements = this.player.world.quadtree.retrieve(this);
 
         for (let element of elements) {
-            if (element instanceof Food) {
+            if (element instanceof Food || element instanceof Cell) {
                 if (this.mass * consumePercent <= element.mass) continue;
 
                 let dist = Math.sqrt(Math.pow(element.x - this.x, 2) + Math.pow(element.y - this.y, 2));
@@ -104,11 +104,7 @@ export default class Cell extends Circle {
     }
 
     remove() {
-        let index = this.player.cells.indexOf(this);
-        if (index === -1) return false;
-
-        this.player.cells.splice(index, 1);
-        return true;
+        return this.player.removeCell(this.id);
     }
 
     // Serialize the data for sending

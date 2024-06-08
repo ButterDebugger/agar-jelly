@@ -21,6 +21,12 @@ export default class World extends EventEmitter {
             width: this.width,
             height: this.height
         });
+
+        this.on("remove_cell", (cell) => {
+            if (cell.player.isDead) {
+                this.removePlayer(cell.player.id);
+            }
+        });
     }
 
     update(delta) {
@@ -116,8 +122,9 @@ export default class World extends EventEmitter {
         let index = this.players.findIndex(p => p.id === id);
         if (index === -1) return false;
 
+        let player = this.players[index];
         this.players.splice(index, 1);
-        // TODO: emit remove_player
+        this.emit("remove_player", player);
         return true;
     }
 
@@ -125,8 +132,9 @@ export default class World extends EventEmitter {
         let index = this.foods.findIndex(f => f.id === id);
         if (index === -1) return false;
 
+        let food = this.foods[index];
         this.foods.splice(index, 1);
-        this.emit("remove_food", id);
+        this.emit("remove_food", food);
         return true;
     }
 
