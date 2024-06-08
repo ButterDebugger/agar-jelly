@@ -35,6 +35,10 @@ export default class Player {
         this.cells.forEach(cell => cell.update(delta));
     }
 
+    tickPhysics(delta) {
+        this.cells.forEach(cell => cell.tickPhysics(delta));
+    }
+
     addToQuadtree() {
         for (let cell of this.cells) {
             cell.addToQuadtree();

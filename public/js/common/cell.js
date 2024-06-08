@@ -41,18 +41,18 @@ export default class Cell extends Circle {
     }
 
     update(delta) {
+        this.tickPhysics(delta);
+        this.handleFoodCollision();
+    }
+
+    tickPhysics(delta) {
         // Move cell in direction
         let speed = this.speed;
 
         this.x += this.dir.x * speed * this.speedMultiplier * delta;
         this.y += this.dir.y * speed * this.speedMultiplier * delta;
 
-        this.handleWallCollision();
-        this.handleFoodCollision();
-    }
-
-    // Prevents the cell from breaching the world's borders
-    handleWallCollision() {
+        // Prevents the cell from breaching the world's borders
         this.x = Math.max(0, Math.min(this.player.world.width, this.x));
         this.y = Math.max(0, Math.min(this.player.world.height, this.y));
     }

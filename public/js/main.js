@@ -54,7 +54,15 @@ socket.on("spawn_foods", (foods) => {
 	for (let foodData of foods) {
 		world.getOrCreateFood(foodData);
 	}
-})
+});
+
+socket.on("remove_player", (id) => { // NOTE: not used yet
+	world.removePlayer(id);
+});
+
+socket.on("remove_food", (id) => { // NOTE: not used yet
+	world.removeFood(id);
+});
 
 function init() {
 	// Register event handlers
@@ -72,7 +80,7 @@ function init() {
 		camera.render();
 
 		// Tick objects
-		world.update(delta);
+		world.tickPhysics(delta);
 		if (yourself !== null) updatePlayer();
 	});
 }

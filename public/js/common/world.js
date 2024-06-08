@@ -1,9 +1,12 @@
 import { Quadtree } from "@timohausmann/quadtree-ts";
+import EventEmitter from "eventemitter3";
 import Player from "./player.js";
 import Food from "./food.js";
 
-export default class World {
+export default class World extends EventEmitter {
     constructor(options = {}) {
+        super();
+
         this.width = options.width ?? 10000;
         this.height = options.height ?? 10000;
 
@@ -20,6 +23,11 @@ export default class World {
     update(delta) {
         this.players.forEach(player => player.update(delta));
         this.foods.forEach(food => food.update(delta));
+    }
+
+    tickPhysics(delta) {
+        this.players.forEach(player => player.tickPhysics(delta));
+        this.foods.forEach(food => food.tickPhysics(delta));
     }
 
     buildQuadtree() {
@@ -101,19 +109,21 @@ export default class World {
         return food;
     }
 
-    removePlayer(player) {
-        let index = this.players.indexOf(player);
+    removePlayer(id) {
+        let index = this.players.findIndex(p => p.id === id);
         if (index === -1) return false;
 
         this.players.splice(index, 1);
+        // TODO: emit remove_player
         return true;
     }
 
-    removeFood(food) {
-        let index = this.foods.indexOf(food);
+    removeFood(id) {
+        let index = this.foods.findIndex(f => f.id === id);
         if (index === -1) return false;
 
         this.foods.splice(index, 1);
+        this.emit("remove_food", id);
         return true;
     }
 

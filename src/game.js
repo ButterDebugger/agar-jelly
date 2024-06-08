@@ -23,6 +23,10 @@ for (let i = 0; i < 1000; i++) {
 }
 
 export function init() {
+    world.on("remove_food", (id) => {
+        io.emit("remove_food", id);
+    });
+
     ticker(tps, (delta) => {
         // Build the quadtree
         world.buildQuadtree();

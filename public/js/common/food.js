@@ -29,17 +29,17 @@ export default class Food extends Circle {
     }
 
     update(delta) {
+        this.tickPhysics(delta);
+    }
+
+    tickPhysics(delta) {
         this.x += this.vel.x * delta;
         this.y += this.vel.y * delta;
 
         this.vel.x *= Math.pow(friction, delta);
         this.vel.y *= Math.pow(friction, delta);
 
-        this.handleWallCollision();
-    }
-
-    // Prevents the cell from breaching the world's borders
-    handleWallCollision() {
+        // Prevents the food from breaching the world's borders
         this.x = Math.max(0, Math.min(this.world.width, this.x));
         this.y = Math.max(0, Math.min(this.world.height, this.y));
     }
@@ -49,11 +49,7 @@ export default class Food extends Circle {
     }
 
     remove() {
-        let index = this.world.foods.indexOf(this);
-        if (index === -1) return false;
-
-        this.world.foods.splice(index, 1);
-        return true;
+        return this.world.removeFood(this.id);
     }
 
     // Serialize the data for sending
