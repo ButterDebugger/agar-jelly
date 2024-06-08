@@ -137,6 +137,8 @@ export function connectionHandler(socket) {
     socket.on("disconnect", () => {
         if (!socket.player) return;
 
+        world.removePlayer(socket.player.id);
+
         socket.broadcast.emit("remove_player", socket.player.id);
         socket.player = null;
     })
