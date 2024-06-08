@@ -6,20 +6,13 @@ import { io } from "./index.js";
 
 const randomInt = (min = 0, max = 1) => Math.floor(Math.random() * (max - min + 1) + min);
 
+const foodAmount = 1000;
 const world = new World({
     width: 10000,
     height: 10000
 });
 
-for (let i = 0; i < 1000; i++) {
-    world.getOrCreateFood({
-        id: randomUUID(),
-        x: randomInt(0, world.width),
-        y: randomInt(0, world.height),
-        color: generateColor(),
-        mass: 10
-    });
-}
+generateFood(foodAmount);
 
 export function init() {
     world.on("remove_food", (food) => {
@@ -36,6 +29,11 @@ export function init() {
 
         // Tick objects
         world.update(delta);
+
+        // Add new food NOTE: should probably just spawn food every couple seconds instead
+        if (foodAmount - world.foods.length > 0) {
+            io.emit("spawn_foods", generateFood().map(p => p.serialize()));
+        }
 
         io.volatile.emit("tick_players", world.players.map(p => p.serialize()));
     });
@@ -138,6 +136,22 @@ export function connectionHandler(socket) {
         socket.broadcast.emit("remove_player", socket.player.id);
         socket.player = null;
     })
+}
+
+function generateFood(amount = 1) {
+    let foods = [];
+
+    for (let i = 0; i < amount; i++) {
+        foods.push(world.getOrCreateFood({
+            id: randomUUID(),
+            x: randomInt(0, world.width),
+            y: randomInt(0, world.height),
+            color: generateColor(),
+            mass: randomInt(10, 20)
+        }));
+    }
+
+    return foods;
 }
 
 function generateColor() {
