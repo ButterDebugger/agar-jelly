@@ -1,12 +1,11 @@
 import { v4 as randomUUID } from "uuid";
 import ticker from "../public/js/common/ticker.js";
-import World from "../public/js/common/world.js";
+import World, { tps } from "../public/js/common/world.js";
 import { minEjectMass, ejectAmount } from "../public/js/common/player.js";
 import { io } from "./index.js";
 
 const randomInt = (min = 0, max = 1) => Math.floor(Math.random() * (max - min + 1) + min);
 
-const tps = 60;
 const world = new World({
     width: 10000,
     height: 10000
@@ -41,10 +40,7 @@ export function init() {
 export function connectionHandler(socket) {
     socket.player = null;
 
-    socket.emit("init", {
-        tps: tps,
-        ...world.serialize()
-    });
+    socket.emit("init", world.serialize());
 
     socket.on("join", (name) => {
         if (typeof name !== "string") return;

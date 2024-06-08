@@ -3,6 +3,8 @@ import EventEmitter from "eventemitter3";
 import Player from "./player.js";
 import Food from "./food.js";
 
+export const tps = 60;
+
 export default class World extends EventEmitter {
     constructor(options = {}) {
         super();

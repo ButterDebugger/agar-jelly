@@ -1,8 +1,10 @@
 import { Circle } from "@timohausmann/quadtree-ts";
 import Food from "./food.js";
+import World, { tps } from "./world.js";
 
 export const maxSpeed = 10;
 export const minSpeed = 1;
+export const minMassDecay = 20;
 
 export default class Cell extends Circle {
     constructor(player, options = {}) {
@@ -43,6 +45,7 @@ export default class Cell extends Circle {
     update(delta) {
         this.tickPhysics(delta);
         this.handleFoodCollision();
+        this.handleMassDecay(delta);
     }
 
     tickPhysics(delta) {
@@ -72,6 +75,14 @@ export default class Cell extends Circle {
                     this.mass += element.mass;
                 }
             }
+        }
+    }
+
+    handleMassDecay(delta) {
+        if (this.mass > minMassDecay) {
+            let decay = this.mass * (0.00003 / 60 * tps) * delta;
+
+            this.mass = Math.max(this.mass - decay, minMassDecay);
         }
     }
 

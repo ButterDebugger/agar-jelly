@@ -1,7 +1,7 @@
 import keys from "https://debutter.dev/x/js/keys.js@1.1.0";
 import {} from "./start.js";
 import Camera from "./client/camera.js";
-import World from "./common/world.js";
+import World, { tps } from "./common/world.js";
 import ticker from "./common/ticker.js";
 
 export const canvas = document.querySelector("canvas");
@@ -9,14 +9,11 @@ export const ctx = canvas.getContext("2d");
 export const socket = io();
 
 let yourself = null;
-let tps;
 let world;
 let camera;
 
 socket.once("init", (data) => {
 	console.log("init");
-
-	tps = data.tps;
 
 	world = new World({
 		width: data.width,
