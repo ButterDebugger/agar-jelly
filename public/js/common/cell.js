@@ -6,6 +6,7 @@ export const minSpeed = 1;
 export const minMassDecay = 20;
 export const massDecayPercent = 0.00003;
 export const consumePercent = 0.85;
+export const consumeGainPercent = 0.80;
 
 export default class Cell extends Circle {
     constructor(player, options = {}) {
@@ -73,7 +74,7 @@ export default class Cell extends Circle {
 
                 if (dist < this.r - element.r / 2) {
                     element.remove();
-                    this.mass += element.mass;
+                    this.mass += element.mass * consumeGainPercent;
                 }
             }
         }
