@@ -24,8 +24,8 @@ export default class Cell extends Circle {
         this.mass = options.mass ?? 0;
         this.speedMultiplier = options.speedMultiplier ?? 1;
         this.dir = {
-            x: 0,
-            y: 0
+            x: options?.dir?.x ?? 0,
+            y: options?.dir?.y ?? 0,
         };
         this.vel = {
             x: options?.vel?.x ?? 0,

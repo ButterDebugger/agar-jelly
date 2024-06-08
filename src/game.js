@@ -90,8 +90,8 @@ export function connectionHandler(socket) {
             if (cell.mass >= minEjectMass + ejectAmount) {
                 let food = world.getOrCreateFood({
                     id: randomUUID(),
-                    x: cell.x + cell.dir.x * cell.mass,
-                    y: cell.y + cell.dir.y * cell.mass,
+                    x: cell.x + cell.dir.x * cell.r,
+                    y: cell.y + cell.dir.y * cell.r,
                     color: socket.player.color,
                     mass: ejectAmount,
                     vel: {
@@ -115,12 +115,16 @@ export function connectionHandler(socket) {
             if (cell.mass >= minSplitMass) {
                 socket.player.addCell({
                     id: randomUUID(),
-                    x: cell.x + cell.dir.x * cell.mass,
-                    y: cell.y + cell.dir.y * cell.mass,
+                    x: cell.x + cell.dir.x * cell.r,
+                    y: cell.y + cell.dir.y * cell.r,
                     mass: cell.mass / 2,
+                    dir: {
+                        x: cell.dir.x,
+                        y: cell.dir.y
+                    },
                     vel: {
-                        x: cell.dir.x * 10,
-                        y: cell.dir.y * 10
+                        x: cell.dir.x * 15,
+                        y: cell.dir.y * 15
                     }
                 });
                 cell.mass /= 2;

@@ -3,7 +3,7 @@ import Cell from "./cell.js";
 export const minEjectMass = 20;
 export const ejectAmount = 10;
 export const minSplitMass = 40;
-export const maxSplitCells = 10;
+export const maxSplitCells = 10; // NOTE: never actually used
 export const consumeGainPercent = 0.80;
 export const consumePercent = 0.85;
 
@@ -78,10 +78,10 @@ export default class Player {
                     dir.y *= 1 / length;
 
                     // Move the cells apart
-                    cell1.x += dir.x * (cell1.r + cell2.r - dist) / 2;
-                    cell1.y += dir.y * (cell1.r + cell2.r - dist) / 2;
-                    cell2.x -= dir.x * (cell1.r + cell2.r - dist) / 2;
-                    cell2.y -= dir.y * (cell1.r + cell2.r - dist) / 2;
+                    cell1.x += dir.x * ((cell1.r + cell2.r - dist) / 2) * delta;
+                    cell1.y += dir.y * ((cell1.r + cell2.r - dist) / 2) * delta;
+                    cell2.x -= dir.x * ((cell1.r + cell2.r - dist) / 2) * delta;
+                    cell2.y -= dir.y * ((cell1.r + cell2.r - dist) / 2) * delta;
                 }
             }
         }
