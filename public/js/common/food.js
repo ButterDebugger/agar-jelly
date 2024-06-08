@@ -2,16 +2,19 @@ import { Circle } from "@timohausmann/quadtree-ts";
 import { friction } from "./world.js";
 
 export default class Food extends Circle {
+    #mass;
+
     constructor(world, options = {}) {
         super({
             x: options.x ?? 0,
             y: options.y ?? 0,
-            r: options.mass ?? 0
+            r: 0
         });
 
 		Object.defineProperty(this, "world", { value: world });
 
         this.id = options.id;
+        this.mass = options.mass ?? 0;
         this.color = options.color;
         this.vel = {
             x: options?.vel?.x ?? 0,
@@ -21,10 +24,11 @@ export default class Food extends Circle {
 
     // Map circle radius to the variable "mass"
     get mass() {
-        return this.r;
+        return this.#mass;
     }
     set mass(value) {
-        this.r = value;
+        this.#mass = value;
+        this.r = Math.max(10, value);
     }
 
     update(delta) {

@@ -22,6 +22,8 @@ socket.once("init", (data) => {
 
 	camera = new Camera(world);
 
+	// TODO: set a random camera offset
+
 	for (let playerData of data.players) {
 		world.getOrCreatePlayer(playerData);
 	}

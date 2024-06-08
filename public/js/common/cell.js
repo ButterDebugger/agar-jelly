@@ -9,16 +9,19 @@ export const minMassDecay = 20;
 export const massDecayPercent = 0.00003;
 
 export default class Cell extends Circle {
+    #mass;
+
     constructor(player, options = {}) {
         super({
             x: options.x ?? 0,
             y: options.y ?? 0,
-            r: options.mass ?? 0
+            r: 0
         });
 
 		Object.defineProperty(this, "player", { value: player });
 
         this.id = options.id;
+        this.mass = options.mass ?? 0;
         this.speedMultiplier = options.speedMultiplier ?? 1;
         this.dir = {
             x: 0,
@@ -32,15 +35,16 @@ export default class Cell extends Circle {
 
     // Map circle radius to the variable "mass"
     get mass() {
-        return this.r;
+        return this.#mass;
     }
     set mass(value) {
-        this.r = value;
+        this.#mass = value;
+        this.r = Math.max(10, value);
     }
 
     // Based on the mass, calculate the speed
     get speed() {
-        return (this.mass / Math.pow(this.mass, 1.44)) * 10;
+        return (this.mass / Math.pow(this.mass, 1.33)) * 10;
     }
 
     // Get parent player color

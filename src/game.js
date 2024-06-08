@@ -55,8 +55,8 @@ export function connectionHandler(socket) {
         });
         player.addCell({
             id: randomUUID(),
-            x: 0,
-            y: 0,
+            x: randomInt(0, world.width),
+            y: randomInt(0, world.height),
             mass: 20
         });
 
@@ -147,7 +147,7 @@ function generateFood(amount = 1) {
             x: randomInt(0, world.width),
             y: randomInt(0, world.height),
             color: generateColor(),
-            mass: 10
+            mass: 7
         }));
     }
 
