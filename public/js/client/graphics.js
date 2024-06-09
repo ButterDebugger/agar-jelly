@@ -8,10 +8,8 @@ export function drawBackground(camera) {
 
     let startX = Math.max(-camera.offsetX, camera.x - camera.offsetX);
     let startY = Math.max(-camera.offsetY, camera.y - camera.offsetY);
-    let endX = Math.min(camera.world.width - camera.offsetX, camera.width);
-    let endY = Math.min(camera.world.height - camera.offsetY, camera.height);
-
-    // TODO: limit the amount of lines to be drawn
+    let endX = Math.min(camera.world.width - camera.offsetX, camera.x + camera.width - camera.offsetX);
+    let endY = Math.min(camera.world.height - camera.offsetY, camera.y + camera.height - camera.offsetY);
 
     // Horizontal lines
     for (let i = 0; i <= camera.world.height / gridSpacing; i++) {

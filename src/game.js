@@ -141,7 +141,7 @@ export function connectionHandler(socket) {
 
         socket.broadcast.emit("remove_player", socket.player.id);
         socket.player = null;
-    })
+    });
 }
 
 function generateFood(amount = 1) {
