@@ -18,7 +18,7 @@ export default class Cell extends Circle {
             r: 0
         });
 
-		Object.defineProperty(this, "player", { value: player });
+        Object.defineProperty(this, "player", { value: player });
 
         this.id = options.id;
         this.mass = options.mass ?? 0;

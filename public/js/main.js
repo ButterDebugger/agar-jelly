@@ -1,5 +1,5 @@
 import keys from "https://debutter.dev/x/js/keys.js@1.1.0";
-import {} from "./start.js";
+import { } from "./start.js";
 import Camera from "./client/camera.js";
 import World, { tps } from "./common/world.js";
 import ticker from "./common/ticker.js";

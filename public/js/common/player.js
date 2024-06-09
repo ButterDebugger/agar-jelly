@@ -9,12 +9,12 @@ export const consumePercent = 0.85;
 
 export default class Player {
     constructor(world, options = {}) {
-		Object.defineProperty(this, "world", { value: world });
+        Object.defineProperty(this, "world", { value: world });
 
         this.id = options.id;
         this.name = options.name ?? "Player";
         this.color = options.color ?? "white";
-		this.cells = [];
+        this.cells = [];
 
         if (options.cells) {
             for (let cellData of options.cells) {
@@ -93,7 +93,7 @@ export default class Player {
         }
     }
 
-	addCell(options) {
+    addCell(options) {
         if (typeof options.id == "string") {
             // Find a cell with a matching id
             let cell = this.cells.find(c => c.id === options.id);
@@ -112,10 +112,10 @@ export default class Player {
         }
 
         // Create a new cell since it doesn't already exist
-		let cell = new Cell(this, options);
-		this.cells.push(cell);
-		return cell;
-	}
+        let cell = new Cell(this, options);
+        this.cells.push(cell);
+        return cell;
+    }
 
     getCenter() {
         let sumX = 0;

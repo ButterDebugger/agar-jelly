@@ -11,7 +11,7 @@ export default class Food extends Circle {
             r: 0
         });
 
-		Object.defineProperty(this, "world", { value: world });
+        Object.defineProperty(this, "world", { value: world });
 
         this.id = options.id;
         this.mass = options.mass ?? 0;

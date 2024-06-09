@@ -161,7 +161,7 @@ function generateFood(amount = 1) {
 }
 
 function generateColor() {
-    let color = [ 255, randomInt(36, 255), 36 ]
+    let color = [255, randomInt(36, 255), 36]
         .map(value => ({ value, sort: Math.random() }))
         .sort((a, b) => a.sort - b.sort)
         .map(({ value }) => value);
