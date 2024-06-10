@@ -3,6 +3,7 @@ import { drawBackground, drawBlob } from "./graphics.js";
 import Cell from "../common/cell.js";
 import Food from "../common/food.js";
 import { canvas, ctx } from "../main.js";
+import Virus from "../common/virus.js";
 
 export default class Camera extends Rectangle {
     #scale = 1;
@@ -75,7 +76,7 @@ export default class Camera extends Rectangle {
         const elements = this.world.quadtree.retrieve(this);
 
         for (const element of elements) {
-            if (element instanceof Cell || element instanceof Food) {
+            if (element instanceof Cell || element instanceof Food || element instanceof Virus) {
                 if (typeof element.was == "undefined") element.was = {};
 
                 // TODO: find a better way to smooth the position because lerping simply reduces it

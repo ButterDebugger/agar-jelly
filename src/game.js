@@ -7,16 +7,21 @@ import { io } from "./index.js";
 const randomInt = (min = 0, max = 1) => Math.floor(Math.random() * (max - min + 1) + min);
 
 const foodAmount = 1000;
+const virusAmount = 20;
 const world = new World({
     width: 10000,
     height: 10000
 });
 
 generateFood(foodAmount);
+generateVirus(virusAmount);
 
 export function init() {
     world.on("remove_food", (food) => {
         io.emit("remove_food", food.id);
+    });
+    world.on("remove_virus", (virus) => {
+        io.emit("remove_virus", virus.id);
     });
     world.on("remove_player", (player) => {
         player.socket.broadcast.emit("remove_player", player.id);
@@ -30,9 +35,14 @@ export function init() {
         // Tick objects
         world.update(delta);
 
-        // Add new food NOTE: should probably just spawn food every couple seconds instead
+        // Add new foods
         if (foodAmount - world.foods.length > 0) {
             io.emit("spawn_foods", generateFood().map(p => p.serialize()));
+        }
+
+        // Add new viruses
+        if (virusAmount - world.viruses.length > 0) {
+            io.emit("spawn_viruses", generateVirus().map(p => p.serialize()));
         }
 
         io.volatile.emit("tick_players", world.players.map(p => p.serialize()));
@@ -158,6 +168,20 @@ function generateFood(amount = 1) {
     }
 
     return foods;
+}
+
+function generateVirus(amount = 1) {
+    let viruses = [];
+
+    for (let i = 0; i < amount; i++) {
+        viruses.push(world.getOrCreateVirus({
+            id: randomUUID(),
+            x: randomInt(0, world.width),
+            y: randomInt(0, world.height)
+        }));
+    }
+
+    return viruses;
 }
 
 function generateColor() {

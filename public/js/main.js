@@ -32,6 +32,10 @@ socket.once("init", (data) => {
 		world.getOrCreateFood(foodData);
 	}
 
+	for (let virusData of data.viruses) {
+		world.getOrCreateVirus(virusData);
+	}
+
 	init();
 });
 
@@ -55,6 +59,12 @@ socket.on("spawn_foods", (foods) => {
 	}
 });
 
+socket.on("spawn_viruses", (viruses) => {
+	for (let virusData of viruses) {
+		world.getOrCreateVirus(virusData);
+	}
+});
+
 socket.on("remove_player", (id) => {
 	world.removePlayer(id);
 });
@@ -65,6 +75,10 @@ socket.on("death", () => {
 
 socket.on("remove_food", (id) => {
 	world.removeFood(id);
+});
+
+socket.on("remove_virus", (id) => {
+	world.removeVirus(id);
 });
 
 function init() {
@@ -119,7 +133,7 @@ function updatePlayer() {
 		dir.x *= -1 / length;
 		dir.y *= -1 / length;
 
-		let speedMultiplier = Math.min(dist / cell.mass, 1);
+		let speedMultiplier = Math.min(dist / 20, 1);
 
 		// Check if the direction is not different
 		if (!(cell.dir.x === dir.x && cell.dir.y === dir.y && cell.speedMultiplier === speedMultiplier)) {

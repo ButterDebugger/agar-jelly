@@ -2,6 +2,7 @@ import { Quadtree } from "@timohausmann/quadtree-ts";
 import EventEmitter from "eventemitter3";
 import Player from "./player.js";
 import Food from "./food.js";
+import Virus from "./virus.js";
 
 export const tps = 60;
 export const friction = 0.94;
@@ -15,6 +16,7 @@ export default class World extends EventEmitter {
 
         this.players = [];
         this.foods = [];
+        this.viruses = [];
 
         // Create the quadtree
         this.quadtree = new Quadtree({
@@ -32,11 +34,13 @@ export default class World extends EventEmitter {
     update(delta) {
         this.players.forEach(player => player.update(delta));
         this.foods.forEach(food => food.update(delta));
+        this.viruses.forEach(food => food.update(delta));
     }
 
     tickPhysics(delta) {
         this.players.forEach(player => player.tickPhysics(delta));
         this.foods.forEach(food => food.tickPhysics(delta));
+        this.viruses.forEach(food => food.tickPhysics(delta));
     }
 
     buildQuadtree() {
@@ -47,6 +51,9 @@ export default class World extends EventEmitter {
             player.addToQuadtree();
         }
         for (let food of this.foods) {
+            food.addToQuadtree();
+        }
+        for (let food of this.viruses) {
             food.addToQuadtree();
         }
     }
@@ -118,6 +125,33 @@ export default class World extends EventEmitter {
         return food;
     }
 
+    getOrCreateVirus(options) {
+        if (typeof options.id == "string") {
+            // Find a virus with a matching id
+            let virus = this.viruses.find(f => f.id === options.id);
+
+            // If the virus exists, rewrite its properties
+            if (virus) {
+                if (options.x) virus.x = options.x;
+                if (options.y) virus.y = options.y;
+                if (options.mass) virus.mass = options.mass;
+                if (options.color) virus.color = options.color;
+                if (options.vel) {
+                    virus.vel.x = options.vel.x;
+                    virus.vel.y = options.vel.y;
+                }
+
+                // Return the existing virus
+                return virus;
+            }
+        }
+
+        // Create a new virus since it doesn't already exist
+        let virus = new Virus(this, options);
+        this.viruses.push(virus);
+        return virus;
+    }
+
     removePlayer(id) {
         let index = this.players.findIndex(p => p.id === id);
         if (index === -1) return false;
@@ -138,13 +172,24 @@ export default class World extends EventEmitter {
         return true;
     }
 
+    removeVirus(id) {
+        let index = this.viruses.findIndex(v => v.id === id);
+        if (index === -1) return false;
+
+        let virus = this.viruses[index];
+        this.viruses.splice(index, 1);
+        this.emit("remove_virus", virus);
+        return true;
+    }
+
     // Serialize the data for sending
     serialize() {
         return {
             width: this.width,
             height: this.height,
             players: this.players.map(player => player.serialize()),
-            foods: this.foods.map(food => food.serialize())
+            foods: this.foods.map(food => food.serialize()),
+            viruses: this.viruses.map(virus => virus.serialize()),
         };
     }
 }

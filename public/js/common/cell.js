@@ -1,7 +1,8 @@
 import { Circle } from "@timohausmann/quadtree-ts";
 import Food from "./food.js";
-import { friction } from "./world.js";
+import { friction, tps } from "./world.js";
 import { consumeGainPercent, consumePercent } from "./player.js";
+import Virus from "./virus.js";
 
 export const maxSpeed = 10;
 export const minSpeed = 1;
@@ -54,7 +55,7 @@ export default class Cell extends Circle {
 
     update(delta) {
         this.tickPhysics(delta);
-        this.handleFoodCollision();
+        this.handleEating();
         this.handleMassDecay(delta);
     }
 
@@ -77,12 +78,12 @@ export default class Cell extends Circle {
         this.y = Math.max(0, Math.min(this.player.world.height, this.y));
     }
 
-    handleFoodCollision() {
+    handleEating() {
         // Get nearby object in the worlds quadtree
         const elements = this.player.world.quadtree.retrieve(this);
 
         for (let element of elements) {
-            if (element instanceof Food || element instanceof Cell) {
+            if (element instanceof Food || element instanceof Cell || element instanceof Virus) {
                 if (this.mass * consumePercent <= element.mass) continue;
 
                 let dist = Math.sqrt(Math.pow(element.x - this.x, 2) + Math.pow(element.y - this.y, 2));
@@ -97,7 +98,7 @@ export default class Cell extends Circle {
 
     handleMassDecay(delta) {
         if (this.mass > minMassDecay) {
-            let decay = this.mass * massDecayPercent * delta;
+            let decay = (this.mass - this.mass * Math.pow(0.99997, this.mass / tps)) * delta;
 
             this.mass = Math.max(this.mass - decay, minMassDecay);
         }
