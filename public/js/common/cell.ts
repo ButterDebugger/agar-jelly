@@ -28,13 +28,14 @@ export interface SerializedCell {
 }
 
 export default class Cell extends Circle {
-    #mass: number;
+    #mass: number = 0;
 
     player: Player;
     id: string;
     speedMultiplier: number;
     dir: { x: number; y: number };
     vel: { x: number; y: number };
+    was?: { x: number; y: number; r: number };
 
     constructor(player: Player, options: CellOptions) {
         super({
@@ -76,13 +77,13 @@ export default class Cell extends Circle {
         return this.player.color;
     }
 
-    update(delta) {
+    update(delta: number) {
         this.tickPhysics(delta);
         this.handleEating();
         this.handleMassDecay(delta);
     }
 
-    tickPhysics(delta) {
+    tickPhysics(delta: number) {
         // Move cell in direction
         let speed = this.speed;
 
@@ -121,7 +122,7 @@ export default class Cell extends Circle {
         }
     }
 
-    handleMassDecay(delta) {
+    handleMassDecay(delta: number) {
         if (this.mass > minMassDecay) {
             let decay = (this.mass - this.mass * Math.pow(0.99997, this.mass / tps)) * delta;
 

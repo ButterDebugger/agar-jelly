@@ -14,8 +14,10 @@ interface SocketData {
     player: any;
 }
 
-export const io = new Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, SocketData>();
+const io = new Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, SocketData>();
 const engine = new Engine();
+
+export type IO = typeof io;
 
 // Enable logger in development
 if (isDev) app.use("*", logger());
@@ -26,7 +28,7 @@ app.get("/*", serveStatic({ root: "dist" }));
 // Bind the Socket.IO server to the engine
 io.bind(engine);
 
-init();
+init(io);
 
 const { websocket } = engine.handler();
 

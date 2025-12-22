@@ -80,7 +80,9 @@ export default class Camera extends Rectangle {
 
         for (const element of elements) {
             if (element instanceof Cell || element instanceof Food || element instanceof Virus) {
-                if (typeof element.was == "undefined") element.was = {};
+                if (typeof element.was == "undefined") {
+                    element.was = { x: element.x, y: element.y, r: element.r };
+                }
 
                 // TODO: find a better way to smooth the position because lerping simply reduces it
                 let am = {

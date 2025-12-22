@@ -3,6 +3,7 @@ import EventEmitter from "eventemitter3";
 import Player, { type PlayerOptions, type SerializedPlayer } from "./player.ts";
 import Food, { type FoodOptions, type SerializedFood } from "./food.ts";
 import Virus, { type SerializedVirus, type VirusOptions } from "./virus.ts";
+import type Cell from "./cell.ts";
 
 export const tps = 60;
 export const friction = 0.94;
@@ -26,7 +27,7 @@ export default class World extends EventEmitter {
     players: Player[];
     foods: Food[];
     viruses: Virus[];
-    quadtree: Quadtree;
+    quadtree: Quadtree<Cell | Food | Virus>;
 
     constructor(options: WorldOptions = {}) {
         super();

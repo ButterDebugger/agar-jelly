@@ -1,8 +1,8 @@
 import { v4 as randomUUID } from "uuid";
-import ticker from "../public/js/common/ticker.js";
-import World, { tps } from "../public/js/common/world.js";
-import { minEjectMass, ejectAmount, minSplitMass } from "../public/js/common/player.js";
-import { io } from "./index.ts";
+import ticker from "../public/js/common/ticker.ts";
+import World, { tps } from "../public/js/common/world.ts";
+import { minEjectMass, ejectAmount, minSplitMass } from "../public/js/common/player.ts";
+import type { IO } from "./index.ts";
 
 const randomInt = (min = 0, max = 1) => Math.floor(Math.random() * (max - min + 1) + min);
 
@@ -16,116 +16,116 @@ const world = new World({
 generateFood(foodAmount);
 generateVirus(virusAmount);
 
-io.on("connection", (socket) => {
-    console.log("a user connected");
+export function init(io: IO) {
+    io.on("connection", (socket) => {
+        console.log("a user connected");
 
-    socket.data.player = null;
+        socket.data.player = null;
 
-    socket.emit("init", world.serialize());
+        socket.emit("init", world.serialize());
 
-    socket.on("join", (name) => {
-        if (typeof name !== "string") return;
-        if (socket.data.player) return;
+        socket.on("join", (name) => {
+            if (typeof name !== "string") return;
+            if (socket.data.player) return;
 
-        let player = world.getOrCreatePlayer({
-            id: socket.id,
-            name: name,
-            color: generateColor(),
-            cells: [
-                {
-                    id: randomUUID(),
-                    x: randomInt(0, world.width),
-                    y: randomInt(0, world.height),
-                    mass: 20,
-                },
-            ],
+            let player = world.getOrCreatePlayer({
+                id: socket.id,
+                name: name,
+                color: generateColor(),
+                cells: [
+                    {
+                        id: randomUUID(),
+                        x: randomInt(0, world.width),
+                        y: randomInt(0, world.height),
+                        mass: 20,
+                    },
+                ],
+            });
+
+            player.socket = socket;
+            socket.data.player = player;
+
+            let serializedPlayer = player.serialize();
+
+            socket.broadcast.emit("update_player", serializedPlayer);
+            socket.emit("update_self", serializedPlayer);
         });
 
-        player.socket = socket;
-        socket.data.player = player;
+        socket.on("direct_cells", (data) => {
+            if (!socket.data.player) return;
 
-        let serializedPlayer = player.serialize();
-
-        socket.broadcast.emit("update_player", serializedPlayer);
-        socket.emit("update_self", serializedPlayer);
-    });
-
-    socket.on("direct_cells", (data) => {
-        if (!socket.data.player) return;
-
-        for (let cell of socket.data.player.cells) {
-            if (cell.id in data) {
-                cell.dir.x = data[cell.id].x;
-                cell.dir.y = data[cell.id].y;
-                cell.speedMultiplier = data[cell.id].speedMultiplier;
+            for (let cell of socket.data.player.cells) {
+                if (cell.id in data) {
+                    cell.dir.x = data[cell.id].x;
+                    cell.dir.y = data[cell.id].y;
+                    cell.speedMultiplier = data[cell.id].speedMultiplier;
+                }
             }
-        }
-    });
+        });
 
-    socket.on("eject", () => {
-        if (!socket.data.player) return;
+        socket.on("eject", () => {
+            if (!socket.data.player) return;
 
-        let newFoods = [];
+            let newFoods = [];
 
-        for (let cell of socket.data.player.cells) {
-            if (cell.mass >= minEjectMass + ejectAmount) {
-                let food = world.getOrCreateFood({
-                    id: randomUUID(),
-                    x: cell.x + cell.dir.x * cell.r,
-                    y: cell.y + cell.dir.y * cell.r,
-                    color: socket.data.player.color,
-                    mass: ejectAmount,
-                    vel: {
-                        x: cell.dir.x * 10,
-                        y: cell.dir.y * 10,
-                    },
-                });
-                newFoods.push(food.serialize());
+            for (let cell of socket.data.player.cells) {
+                if (cell.mass >= minEjectMass + ejectAmount) {
+                    let food = world.getOrCreateFood({
+                        id: randomUUID(),
+                        x: cell.x + cell.dir.x * cell.r,
+                        y: cell.y + cell.dir.y * cell.r,
+                        color: socket.data.player.color,
+                        mass: ejectAmount,
+                        vel: {
+                            x: cell.dir.x * 10,
+                            y: cell.dir.y * 10,
+                        },
+                    });
+                    newFoods.push(food.serialize());
 
-                cell.mass -= ejectAmount;
+                    cell.mass -= ejectAmount;
+                }
             }
-        }
 
-        io.emit("spawn_foods", newFoods);
-    });
+            io.emit("spawn_foods", newFoods);
+        });
 
-    socket.on("split", () => {
-        if (!socket.data.player) return;
+        socket.on("split", () => {
+            if (!socket.data.player) return;
 
-        for (let cell of [...socket.data.player.cells]) {
-            if (cell.mass >= minSplitMass) {
-                socket.data.player.addCell({
-                    id: randomUUID(),
-                    x: cell.x + cell.dir.x * cell.r,
-                    y: cell.y + cell.dir.y * cell.r,
-                    mass: cell.mass / 2,
-                    dir: {
-                        x: cell.dir.x,
-                        y: cell.dir.y,
-                    },
-                    vel: {
-                        x: cell.dir.x * 15,
-                        y: cell.dir.y * 15,
-                    },
-                });
-                cell.mass /= 2;
+            for (let cell of [...socket.data.player.cells]) {
+                if (cell.mass >= minSplitMass) {
+                    socket.data.player.addCell({
+                        id: randomUUID(),
+                        x: cell.x + cell.dir.x * cell.r,
+                        y: cell.y + cell.dir.y * cell.r,
+                        mass: cell.mass / 2,
+                        dir: {
+                            x: cell.dir.x,
+                            y: cell.dir.y,
+                        },
+                        vel: {
+                            x: cell.dir.x * 15,
+                            y: cell.dir.y * 15,
+                        },
+                    });
+                    cell.mass /= 2;
 
-                io.emit("update_player", socket.data.player.serialize());
+                    io.emit("update_player", socket.data.player.serialize());
+                }
             }
-        }
+        });
+
+        socket.on("disconnect", () => {
+            if (!socket.data.player) return;
+
+            world.removePlayer(socket.data.player.id);
+
+            socket.broadcast.emit("remove_player", socket.data.player.id);
+            socket.data.player = null;
+        });
     });
 
-    socket.on("disconnect", () => {
-        if (!socket.data.player) return;
-
-        world.removePlayer(socket.data.player.id);
-
-        socket.broadcast.emit("remove_player", socket.data.player.id);
-        socket.data.player = null;
-    });
-});
-
-export function init() {
     world.on("remove_food", (food) => {
         io.emit("remove_food", food.id);
     });

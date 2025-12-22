@@ -20,12 +20,13 @@ export interface SerializedFood {
 }
 
 export default class Food extends Circle {
-    #mass: number;
+    #mass: number = 0;
 
     world: World;
     id: string;
     color: string;
     vel: { x: number; y: number };
+    was?: { x: number; y: number; r: number };
 
     constructor(world: World, options: FoodOptions) {
         super({
