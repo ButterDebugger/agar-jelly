@@ -1,21 +1,43 @@
 import { Circle } from "@timohausmann/quadtree-ts";
-import { friction } from "./world.js";
+import World, { friction } from "./world.ts";
 
-export default class Food extends Circle {
-    #mass;
+export interface VirusOptions {
+    id: string;
+    x: number;
+    y: number;
+    mass?: number;
+    color?: string;
+    vel?: { x: number; y: number };
+}
 
-    constructor(world, options = {}) {
+export interface SerializedVirus {
+    id: string;
+    x: number;
+    y: number;
+    mass: number;
+    color: string;
+    vel: { x: number; y: number };
+}
+
+export default class Virus extends Circle {
+    #mass: number;
+
+    world: World;
+    id: string;
+    color: string;
+    vel: { x: number; y: number };
+
+    constructor(world: World, options: VirusOptions) {
         super({
             x: options.x ?? 0,
             y: options.y ?? 0,
-            r: 0
+            r: 0,
         });
 
-        Object.defineProperty(this, "world", { value: world });
-
+        this.world = world;
         this.id = options.id;
-        this.mass = options.mass ?? 0;
-        this.color = options.color;
+        this.mass = options.mass ?? 100;
+        this.color = options.color ?? "#33ff33";
         this.vel = {
             x: options?.vel?.x ?? 0,
             y: options?.vel?.y ?? 0,
@@ -31,18 +53,18 @@ export default class Food extends Circle {
         this.r = Math.max(10, value);
     }
 
-    update(delta) {
+    update(delta: number) {
         this.tickPhysics(delta);
     }
 
-    tickPhysics(delta) {
+    tickPhysics(delta: number) {
         this.x += this.vel.x * delta;
         this.y += this.vel.y * delta;
 
         this.vel.x *= Math.pow(friction, delta);
         this.vel.y *= Math.pow(friction, delta);
 
-        // Prevents the food from breaching the world's borders
+        // Prevents the virus from breaching the world's borders
         this.x = Math.max(0, Math.min(this.world.width, this.x));
         this.y = Math.max(0, Math.min(this.world.height, this.y));
     }
@@ -52,18 +74,18 @@ export default class Food extends Circle {
     }
 
     remove() {
-        return this.world.removeFood(this.id);
+        return this.world.removeVirus(this.id);
     }
 
     // Serialize the data for sending
-    serialize() {
+    serialize(): SerializedVirus {
         return {
             id: this.id,
             x: this.x,
             y: this.y,
             mass: this.mass,
             color: this.color,
-            vel: this.vel
+            vel: this.vel,
         };
     }
 }

@@ -1,20 +1,31 @@
 {
-  "name": "agar-jelly",
-  "version": "1.0.0",
-  "description": "A clone of the game Agar.io with multiplayer",
-  "module": "src/index.js",
+  "name": "vite-hono-bun",
+  "private": true,
+  "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "start": "node src/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "concurrently \"bun run dev:build\" \"bun run dev:serve\"",
+    "dev:build": "bun run vite build --emptyOutDir --mode development --watch",
+    "dev:serve": "bun run --hot src/index.ts",
+    "build": "bun run vite build --emptyOutDir",
+    "serve": "bun run src/index.ts",
+    "start": "bun run vite build --emptyOutDir && bun run src/index.ts"
   },
-  "author": "ButterDebugger",
-  "license": "MIT",
   "dependencies": {
-    "@timohausmann/quadtree-ts": "^2.2.2",
+    "@debutter/helper": "npm:@jsr/debutter__helper@^1.4.1",
+    "@socket.io/bun-engine": "^0.1.0",
+    "@timohausmann/quadtree-ts": "^2.3.0",
     "eventemitter3": "^5.0.1",
-    "express": "^4.19.2",
-    "socket.io": "^4.7.5",
-    "uuid": "^9.0.1"
+    "hono": "^4.11.1",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1",
+    "uuid": "^13.0.0"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/uuid": "^11.0.0",
+    "concurrently": "^9.2.1",
+    "glob": "^11.1.0",
+    "vite": "^6.4.1"
   }
 }

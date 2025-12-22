@@ -1,18 +1,22 @@
 import { Rectangle } from "@timohausmann/quadtree-ts";
-import { drawBackground, drawBlob } from "./graphics.js";
-import Cell from "../common/cell.js";
-import Food from "../common/food.js";
-import { canvas, ctx } from "../main.js";
-import Virus from "../common/virus.js";
+import { drawBackground, drawBlob } from "./graphics.ts";
+import Cell from "../common/cell.ts";
+import Food from "../common/food.ts";
+import { canvas, ctx } from "../main.ts";
+import Virus from "../common/virus.ts";
+import type World from "../common/world.ts";
 
 export default class Camera extends Rectangle {
     #scale = 1;
     #offset = {
         x: 0,
         y: 0,
-    }
+    };
 
-    constructor(world) {
+    world: World;
+    size: { width: number; height: number };
+
+    constructor(world: World) {
         super({
             x: 0,
             y: 0,
@@ -20,12 +24,11 @@ export default class Camera extends Rectangle {
             height: canvas.height,
         });
 
-        Object.defineProperty(this, "world", { value: world });
-
+        this.world = world;
         this.size = {
             width: canvas.width,
             height: canvas.height,
-        }
+        };
     }
 
     get zoom() {
@@ -52,7 +55,7 @@ export default class Camera extends Rectangle {
         this.#updateBounds();
     }
 
-    setDimensions(width, height) {
+    setDimensions(width: number, height: number) {
         this.size.width = width;
         this.size.height = height;
         this.#updateBounds();
@@ -61,8 +64,8 @@ export default class Camera extends Rectangle {
     #updateBounds() {
         this.width = this.size.width * (1 / this.#scale);
         this.height = this.size.height * (1 / this.#scale);
-        this.x = this.width / 2 * this.zoom - this.width / 2 + this.#offset.x;
-        this.y = this.height / 2 * this.zoom - this.height / 2 + this.#offset.y;
+        this.x = (this.width / 2) * this.zoom - this.width / 2 + this.#offset.x;
+        this.y = (this.height / 2) * this.zoom - this.height / 2 + this.#offset.y;
     }
 
     render() {
@@ -84,7 +87,7 @@ export default class Camera extends Rectangle {
                     x: ((element.was.x ?? element.x) + element.x) / 2,
                     y: ((element.was.y ?? element.y) + element.y) / 2,
                     r: ((element.was.r ?? element.r) * 5 + element.r) / 6,
-                }
+                };
 
                 drawBlob(this, {
                     color: element.color,

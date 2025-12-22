@@ -1,15 +1,22 @@
-import { ctx } from "../main.js";
+import { ctx } from "../main.ts";
+import type Camera from "./camera.ts";
 
 const gridSpacing = 100;
 
-export function drawBackground(camera) {
+export function drawBackground(camera: Camera) {
     ctx.fillStyle = "#1d1f25";
     ctx.fillRect(camera.x - camera.offsetX, camera.y - camera.offsetY, camera.width, camera.height);
 
     let startX = Math.max(-camera.offsetX, camera.x - camera.offsetX);
     let startY = Math.max(-camera.offsetY, camera.y - camera.offsetY);
-    let endX = Math.min(camera.world.width - camera.offsetX, camera.x + camera.width - camera.offsetX);
-    let endY = Math.min(camera.world.height - camera.offsetY, camera.y + camera.height - camera.offsetY);
+    let endX = Math.min(
+        camera.world.width - camera.offsetX,
+        camera.x + camera.width - camera.offsetX,
+    );
+    let endY = Math.min(
+        camera.world.height - camera.offsetY,
+        camera.y + camera.height - camera.offsetY,
+    );
 
     // Horizontal lines
     for (let i = 0; i <= camera.world.height / gridSpacing; i++) {
@@ -40,7 +47,7 @@ export function drawBackground(camera) {
     ctx.closePath();
 }
 
-export function drawBlob(camera, blob) {
+export function drawBlob(camera: Camera, blob: { x: number; y: number; r: number; color: string }) {
     ctx.beginPath();
     ctx.fillStyle = blob.color;
     ctx.arc(blob.x - camera.offsetX, blob.y - camera.offsetY, blob.r, 0, 2 * Math.PI);

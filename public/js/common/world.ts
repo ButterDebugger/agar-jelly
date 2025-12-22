@@ -1,14 +1,34 @@
 import { Quadtree } from "@timohausmann/quadtree-ts";
 import EventEmitter from "eventemitter3";
-import Player from "./player.js";
-import Food from "./food.js";
-import Virus from "./virus.js";
+import Player, { type PlayerOptions, type SerializedPlayer } from "./player.ts";
+import Food, { type FoodOptions, type SerializedFood } from "./food.ts";
+import Virus, { type SerializedVirus, type VirusOptions } from "./virus.ts";
 
 export const tps = 60;
 export const friction = 0.94;
 
+export interface WorldOptions {
+    width?: number;
+    height?: number;
+}
+
+export interface SerializedWorld {
+    width: number;
+    height: number;
+    players: SerializedPlayer[];
+    foods: SerializedFood[];
+    viruses: SerializedVirus[];
+}
+
 export default class World extends EventEmitter {
-    constructor(options = {}) {
+    width: number;
+    height: number;
+    players: Player[];
+    foods: Food[];
+    viruses: Virus[];
+    quadtree: Quadtree;
+
+    constructor(options: WorldOptions = {}) {
         super();
 
         this.width = options.width ?? 10000;
@@ -21,7 +41,7 @@ export default class World extends EventEmitter {
         // Create the quadtree
         this.quadtree = new Quadtree({
             width: this.width,
-            height: this.height
+            height: this.height,
         });
 
         this.on("remove_cell", (cell) => {
@@ -31,16 +51,16 @@ export default class World extends EventEmitter {
         });
     }
 
-    update(delta) {
-        this.players.forEach(player => player.update(delta));
-        this.foods.forEach(food => food.update(delta));
-        this.viruses.forEach(food => food.update(delta));
+    update(delta: number) {
+        this.players.forEach((player) => player.update(delta));
+        this.foods.forEach((food) => food.update(delta));
+        this.viruses.forEach((food) => food.update(delta));
     }
 
-    tickPhysics(delta) {
-        this.players.forEach(player => player.tickPhysics(delta));
-        this.foods.forEach(food => food.tickPhysics(delta));
-        this.viruses.forEach(food => food.tickPhysics(delta));
+    tickPhysics(delta: number) {
+        this.players.forEach((player) => player.tickPhysics(delta));
+        this.foods.forEach((food) => food.tickPhysics(delta));
+        this.viruses.forEach((food) => food.tickPhysics(delta));
     }
 
     buildQuadtree() {
@@ -58,17 +78,17 @@ export default class World extends EventEmitter {
         }
     }
 
-    getOrCreatePlayer(options) {
+    getOrCreatePlayer(options: PlayerOptions) {
         if (typeof options.id == "string") {
             // Find a player with a matching id
-            let player = this.players.find(p => p.id === options.id);
+            let player = this.players.find((p) => p.id === options.id);
 
             // If the player exists, rewrite its properties
             if (player) {
                 if (options.name) player.name = options.name;
                 if (options.color) player.color = options.color;
                 if (options.cells) {
-                    let cellIds = options.cells.map(c => c.id);
+                    let cellIds = options.cells.map((c) => c.id);
 
                     for (let cell of player.cells) {
                         if (!cellIds.includes(cell.id)) {
@@ -77,13 +97,7 @@ export default class World extends EventEmitter {
                     }
 
                     for (let cellData of options.cells) {
-                        player.addCell({
-                            id: cellData.id,
-                            x: cellData.x,
-                            y: cellData.y,
-                            dir: cellData.dir,
-                            mass: cellData.mass
-                        });
+                        player.addCell(cellData);
                     }
                 }
 
@@ -98,10 +112,10 @@ export default class World extends EventEmitter {
         return player;
     }
 
-    getOrCreateFood(options) {
+    getOrCreateFood(options: FoodOptions) {
         if (typeof options.id == "string") {
             // Find a food with a matching id
-            let food = this.foods.find(f => f.id === options.id);
+            let food = this.foods.find((f) => f.id === options.id);
 
             // If the food exists, rewrite its properties
             if (food) {
@@ -125,10 +139,10 @@ export default class World extends EventEmitter {
         return food;
     }
 
-    getOrCreateVirus(options) {
+    getOrCreateVirus(options: VirusOptions) {
         if (typeof options.id == "string") {
             // Find a virus with a matching id
-            let virus = this.viruses.find(f => f.id === options.id);
+            let virus = this.viruses.find((f) => f.id === options.id);
 
             // If the virus exists, rewrite its properties
             if (virus) {
@@ -152,8 +166,8 @@ export default class World extends EventEmitter {
         return virus;
     }
 
-    removePlayer(id) {
-        let index = this.players.findIndex(p => p.id === id);
+    removePlayer(id: string) {
+        let index = this.players.findIndex((p) => p.id === id);
         if (index === -1) return false;
 
         let player = this.players[index];
@@ -162,8 +176,8 @@ export default class World extends EventEmitter {
         return true;
     }
 
-    removeFood(id) {
-        let index = this.foods.findIndex(f => f.id === id);
+    removeFood(id: string) {
+        let index = this.foods.findIndex((f) => f.id === id);
         if (index === -1) return false;
 
         let food = this.foods[index];
@@ -172,8 +186,8 @@ export default class World extends EventEmitter {
         return true;
     }
 
-    removeVirus(id) {
-        let index = this.viruses.findIndex(v => v.id === id);
+    removeVirus(id: string) {
+        let index = this.viruses.findIndex((v) => v.id === id);
         if (index === -1) return false;
 
         let virus = this.viruses[index];
@@ -183,13 +197,13 @@ export default class World extends EventEmitter {
     }
 
     // Serialize the data for sending
-    serialize() {
+    serialize(): SerializedWorld {
         return {
             width: this.width,
             height: this.height,
-            players: this.players.map(player => player.serialize()),
-            foods: this.foods.map(food => food.serialize()),
-            viruses: this.viruses.map(virus => virus.serialize()),
+            players: this.players.map((player) => player.serialize()),
+            foods: this.foods.map((food) => food.serialize()),
+            viruses: this.viruses.map((virus) => virus.serialize()),
         };
     }
 }

@@ -1,4 +1,4 @@
-export default function ticker(tps, callback) {
+export default function ticker(tps: number, callback: (delta: number) => void) {
     const interval = 1000 / tps; // Calculate the interval in milliseconds
     let lastTime = performance.now(); // Initialize the lastTime with the current time
 

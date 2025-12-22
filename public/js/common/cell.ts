@@ -1,26 +1,49 @@
 import { Circle } from "@timohausmann/quadtree-ts";
-import Food from "./food.js";
-import { friction, tps } from "./world.js";
-import { consumeGainPercent, consumePercent } from "./player.js";
-import Virus from "./virus.js";
+import Food from "./food.ts";
+import { friction, tps } from "./world.ts";
+import Player, { consumeGainPercent, consumePercent } from "./player.ts";
+import Virus from "./virus.ts";
 
 export const maxSpeed = 10;
 export const minSpeed = 1;
 export const minMassDecay = 20;
 export const massDecayPercent = 0.00003;
 
-export default class Cell extends Circle {
-    #mass;
+export interface CellOptions {
+    id: string;
+    x: number;
+    y: number;
+    mass: number;
+    dir?: { x: number; y: number };
+    vel?: { x: number; y: number };
+    speedMultiplier?: number;
+}
 
-    constructor(player, options = {}) {
+export interface SerializedCell {
+    id: string;
+    x: number;
+    y: number;
+    mass: number;
+    dir: { x: number; y: number };
+}
+
+export default class Cell extends Circle {
+    #mass: number;
+
+    player: Player;
+    id: string;
+    speedMultiplier: number;
+    dir: { x: number; y: number };
+    vel: { x: number; y: number };
+
+    constructor(player: Player, options: CellOptions) {
         super({
             x: options.x ?? 0,
             y: options.y ?? 0,
-            r: 0
+            r: 0,
         });
 
-        Object.defineProperty(this, "player", { value: player });
-
+        this.player = player;
         this.id = options.id;
         this.mass = options.mass ?? 0;
         this.speedMultiplier = options.speedMultiplier ?? 1;
@@ -86,7 +109,9 @@ export default class Cell extends Circle {
             if (element instanceof Food || element instanceof Cell || element instanceof Virus) {
                 if (this.mass * consumePercent <= element.mass) continue;
 
-                let dist = Math.sqrt(Math.pow(element.x - this.x, 2) + Math.pow(element.y - this.y, 2));
+                let dist = Math.sqrt(
+                    Math.pow(element.x - this.x, 2) + Math.pow(element.y - this.y, 2),
+                );
 
                 if (dist < this.r - element.r / 2) {
                     element.remove();
@@ -113,13 +138,13 @@ export default class Cell extends Circle {
     }
 
     // Serialize the data for sending
-    serialize() {
+    serialize(): SerializedCell {
         return {
             id: this.id,
             x: this.x,
             y: this.y,
             mass: this.mass,
-            dir: this.dir
+            dir: this.dir,
         };
     }
 }
