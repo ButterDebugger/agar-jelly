@@ -1,6 +1,8 @@
 import type { Socket } from "socket.io";
 import Cell, { type CellOptions, type SerializedCell } from "./cell.ts";
 import type World from "./world.ts";
+import type { Server } from "@socket.io/bun-engine";
+import type { ClientEventsMap, ServerEventsMap } from "./socket.ts";
 
 export const minEjectMass = 20;
 export const ejectAmount = 10;
@@ -30,7 +32,7 @@ export default class Player {
     color: string;
     cells: Cell[];
 
-    socket: Socket | undefined;
+    socket: Socket<ServerEventsMap, ClientEventsMap> | undefined;
 
     constructor(world: World, options: PlayerOptions) {
         this.world = world;

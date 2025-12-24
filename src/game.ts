@@ -1,7 +1,7 @@
 import { v4 as randomUUID } from "uuid";
 import ticker from "../public/js/common/ticker.ts";
 import World, { tps } from "../public/js/common/world.ts";
-import { minEjectMass, ejectAmount, minSplitMass } from "../public/js/common/player.ts";
+import Player, { minEjectMass, ejectAmount, minSplitMass } from "../public/js/common/player.ts";
 import type { IO } from "./index.ts";
 
 const randomInt = (min = 0, max = 1) => Math.floor(Math.random() * (max - min + 1) + min);
@@ -134,7 +134,9 @@ export function init(io: IO) {
     world.on("remove_virus", (virus) => {
         io.emit("remove_virus", virus.id);
     });
-    world.on("remove_player", (player) => {
+    world.on("remove_player", (player: Player) => {
+        if (!player.socket) return;
+
         player.socket.broadcast.emit("remove_player", player.id);
         player.socket.emit("death");
     });

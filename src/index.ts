@@ -5,6 +5,7 @@ import { Server, type DefaultEventsMap } from "socket.io";
 import { Server as Engine } from "@socket.io/bun-engine";
 import { init } from "./game.ts";
 import type Player from "../public/js/common/player.ts";
+import type { ClientEventsMap, ServerEventsMap } from "../public/js/common/socket.ts";
 
 const port = process.env.PORT ?? 3000;
 const isDev = process.env.NODE_ENV === "development";
@@ -15,7 +16,7 @@ interface SocketData {
     player: Player | null;
 }
 
-const io = new Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, SocketData>();
+const io = new Server<ServerEventsMap, ClientEventsMap, DefaultEventsMap, SocketData>();
 const engine = new Engine();
 
 export type IO = typeof io;

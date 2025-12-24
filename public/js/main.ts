@@ -1,14 +1,14 @@
 import { getMouseX, getMouseY, isKeyPressed } from "./client/inputs.ts";
 import {} from "./start.ts";
 import Camera from "./client/camera.ts";
-import World, { tps, type SerializedWorld } from "./common/world.ts";
-import ticker from "./common/ticker.ts";
+import World, { type SerializedWorld } from "./common/world.ts";
 import type { SerializedPlayer } from "./common/player.ts";
 import type { SerializedFood } from "./common/food.ts";
 import type { SerializedVirus } from "./common/virus.ts";
 import type Player from "./common/player.ts";
-import { io } from "socket.io-client";
+import { io, Socket } from "socket.io-client";
 import { runAnimation } from "@debutter/helper";
+import type { ClientEventsMap, ServerEventsMap } from "./common/socket.ts";
 
 export const canvas = <HTMLCanvasElement>document.querySelector("canvas");
 if (!canvas) throw new Error("Canvas not found");
@@ -16,7 +16,7 @@ if (!canvas) throw new Error("Canvas not found");
 export const ctx = <CanvasRenderingContext2D>canvas.getContext("2d");
 if (!ctx) throw new Error("Context not found");
 
-export const socket = io();
+export const socket: Socket<ClientEventsMap, ServerEventsMap> = io();
 
 let yourself: Player | null = null;
 let world: World | null = null;
