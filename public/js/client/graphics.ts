@@ -54,3 +54,18 @@ export function drawBlob(camera: Camera, blob: { x: number; y: number; r: number
     ctx.fill();
     ctx.closePath();
 }
+
+export function drawCenteredText(
+    camera: Camera,
+    x: number,
+    y: number,
+    text: string,
+    size: number = 16,
+    color: string = "white",
+) {
+    ctx.font = `${size}px Arial`;
+    ctx.fillStyle = color;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(text, x - camera.offsetX, y - camera.offsetY);
+}

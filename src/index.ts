@@ -4,6 +4,7 @@ import { serveStatic } from "hono/bun";
 import { Server, type DefaultEventsMap } from "socket.io";
 import { Server as Engine } from "@socket.io/bun-engine";
 import { init } from "./game.ts";
+import type Player from "../public/js/common/player.ts";
 
 const port = process.env.PORT ?? 3000;
 const isDev = process.env.NODE_ENV === "development";
@@ -11,7 +12,7 @@ const app = new Hono();
 
 // Create the Socket IO server
 interface SocketData {
-    player: any;
+    player: Player | null;
 }
 
 const io = new Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, SocketData>();

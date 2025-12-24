@@ -29,6 +29,7 @@ export default class Player {
     name: string;
     color: string;
     cells: Cell[];
+
     socket: Socket | undefined;
 
     constructor(world: World, options: PlayerOptions) {

@@ -8,6 +8,7 @@ import type { SerializedFood } from "./common/food.ts";
 import type { SerializedVirus } from "./common/virus.ts";
 import type Player from "./common/player.ts";
 import { io } from "socket.io-client";
+import { runAnimation } from "@debutter/helper";
 
 export const canvas = <HTMLCanvasElement>document.querySelector("canvas");
 if (!canvas) throw new Error("Canvas not found");
@@ -20,6 +21,8 @@ export const socket = io();
 let yourself: Player | null = null;
 let world: World | null = null;
 let camera: Camera | null = null;
+
+export let debug = true;
 
 socket.once("init", (data: SerializedWorld) => {
     console.log("init");
@@ -52,19 +55,27 @@ socket.once("init", (data: SerializedWorld) => {
     window.addEventListener("keypress", keyDown);
 
     // Render the scene
-    ticker(tps, (delta) => {
-        if (!world || !camera || !yourself) return;
+    let lastTime = performance.now();
+
+    runAnimation(() => {
+        if (!world || !camera || !yourself) return true;
+
+        const now = performance.now();
+        const delta = (now - lastTime) / 1000;
+        lastTime = now;
 
         // Build the quadtree
         world.buildQuadtree();
 
         // Render elements
-        camera.render();
+        camera.render(delta);
 
-        // Tick objects
-        world.tickPhysics(delta);
+        // // Tick objects
+        // world.tickPhysics(delta);
 
         if (yourself !== null) updatePlayer();
+
+        return true;
     });
 });
 
@@ -163,9 +174,9 @@ function updatePlayer() {
     let cellDirectionData: Record<string, { x: number; y: number; speedMultiplier: number }> = {};
     let cellChanged = false;
 
-    yourself.cells.forEach((cell) => {
-        if (!camera) return;
+    // FIXME: this does not take the camera zoom into account
 
+    for (let cell of yourself.cells) {
         // Calculate the angle
         let mouse = {
             y: getMouseY() + camera.offsetY,
@@ -185,7 +196,7 @@ function updatePlayer() {
         dir.x *= -1 / length;
         dir.y *= -1 / length;
 
-        let speedMultiplier = Math.min(dist / 20, 1);
+        let speedMultiplier = Math.min(dist / cell.r, 1);
 
         // Check if the direction is not different
         if (
@@ -206,7 +217,7 @@ function updatePlayer() {
         cell.dir.x = dir.x;
         cell.dir.y = dir.y;
         cell.speedMultiplier = speedMultiplier;
-    });
+    }
 
     // Update the camera
     camera.offsetX = center.x - canvas.width / 2;
@@ -232,6 +243,9 @@ function keyDown() {
     }
     if (isKeyPressed("Space")) {
         socket.emit("split");
+    }
+    if (isKeyPressed("KeyD")) {
+        debug = !debug;
     }
 }
 

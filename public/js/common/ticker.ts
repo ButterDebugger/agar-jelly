@@ -4,13 +4,12 @@ export default function ticker(tps: number, callback: (delta: number) => void) {
 
     function tick() {
         const now = performance.now();
-        const delta = (now - lastTime) / interval; // Calculate the delta time
+        const delta = (now - lastTime) / 1000; // Calculate the delta time
         lastTime = now;
 
         callback(delta);
-
-        setTimeout(tick, interval); // Schedule the next tick
     }
 
-    tick(); // Start the ticking
+    // Start the ticking
+    setInterval(() => tick(), interval);
 }

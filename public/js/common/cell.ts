@@ -4,9 +4,8 @@ import { friction, tps } from "./world.ts";
 import Player, { consumeGainPercent, consumePercent } from "./player.ts";
 import Virus from "./virus.ts";
 
-export const maxSpeed = 10;
-export const minSpeed = 1;
-export const minMassDecay = 20;
+export const speedFactor = 500;
+export const minMassDecay = 200;
 export const massDecayPercent = 0.00003;
 
 export interface CellOptions {
@@ -35,7 +34,8 @@ export default class Cell extends Circle {
     speedMultiplier: number;
     dir: { x: number; y: number };
     vel: { x: number; y: number };
-    was?: { x: number; y: number; r: number };
+
+    was: { x: number; y: number; r: number } | undefined;
 
     constructor(player: Player, options: CellOptions) {
         super({
@@ -69,7 +69,7 @@ export default class Cell extends Circle {
 
     // Based on the mass, calculate the speed
     get speed() {
-        return (this.mass / Math.pow(this.mass, 1.33)) * 10;
+        return (this.mass / Math.pow(this.mass, 1.33)) * speedFactor;
     }
 
     // Get parent player color

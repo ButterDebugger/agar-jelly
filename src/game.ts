@@ -17,6 +17,8 @@ generateFood(foodAmount);
 generateVirus(virusAmount);
 
 export function init(io: IO) {
+    console.log("game init");
+
     io.on("connection", (socket) => {
         console.log("a user connected");
 
@@ -93,7 +95,7 @@ export function init(io: IO) {
         socket.on("split", () => {
             if (!socket.data.player) return;
 
-            for (let cell of [...socket.data.player.cells]) {
+            for (let cell of Array.from(socket.data.player.cells)) {
                 if (cell.mass >= minSplitMass) {
                     socket.data.player.addCell({
                         id: randomUUID(),

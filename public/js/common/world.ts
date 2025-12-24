@@ -27,6 +27,7 @@ export default class World extends EventEmitter {
     players: Player[];
     foods: Food[];
     viruses: Virus[];
+
     quadtree: Quadtree<Cell | Food | Virus>;
 
     constructor(options: WorldOptions = {}) {
