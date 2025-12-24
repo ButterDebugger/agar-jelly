@@ -5,7 +5,7 @@ import Food from "../common/food.ts";
 import { canvas, ctx, debug } from "../main.ts";
 import Virus from "../common/virus.ts";
 import type World from "../common/world.ts";
-import { clamp, lerp } from "@debutter/helper";
+import { lerp } from "@debutter/helper";
 
 export default class Camera extends Rectangle {
     #scale = 1;

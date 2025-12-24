@@ -1,7 +1,6 @@
 import type { Socket } from "socket.io";
 import Cell, { type CellOptions, type SerializedCell } from "./cell.ts";
 import type World from "./world.ts";
-import type { Server } from "@socket.io/bun-engine";
 import type { ClientEventsMap, ServerEventsMap } from "./socket.ts";
 
 export const minEjectMass = 20;
